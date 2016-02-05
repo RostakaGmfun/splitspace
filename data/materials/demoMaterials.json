@@ -1,0 +1,47 @@
+{ "materials": [
+    {
+        "name": "__defaultMaterial__",
+        "ambient":  [1],
+        "diffuse":  [1, 0.4, 0.6],
+        "specular": [1]
+    },
+
+    {
+        "name": "demoPlaneMaterial",
+        "ambient":     [0.8],
+        "diffuse":     [0.45, 0.77, 0.2],
+        "specular":    [0.2, 0, 0.95],
+        "diffuseMap":  "demoPlane.png",
+        "normalMap":   "demoPlane_normal.png",
+        "mappping": {
+            "repeat": [10,10],
+            "filtering": "linear"
+        }
+    },
+    
+    {
+        "name": "demoCubeMaterial",
+        "ambient":     [0.8],
+        "diffuse":     [0.45, 0.77, 0.2],
+        "specular":    [0.2, 0, 0.95],
+        "diffuseMap":  "demoCube.png",
+        "normalMap":   "demoCube_normal.png",
+        "mappping": {
+            "repeat": [10],
+            "filtering": "linear",
+            "mipmapping": true
+        }
+    },
+    
+    {
+        "name": "demoSuzanneMaterial",
+        "ambient":     [1],
+        "diffuse":     [0.3, 0.2, 1],
+        "specular":    [0.2, 0, 0.95],
+        "normalMap":   "demoSuzanne_normal.png",
+        "mappping": {
+            "filtering": "linear",
+            "mipmapping": true
+        }
+    }
+]}

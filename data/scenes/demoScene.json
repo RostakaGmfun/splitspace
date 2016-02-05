@@ -1,0 +1,85 @@
+{
+    "objects": [
+        {
+            "name": "MyPlane",
+            "mesh": "__plane__",
+            "material": "demoPlaneMaterial",
+            "transform": {
+                "position": [0,0,0],
+                "rotation": [0,0,0],
+                "scaling":  [10]
+            }
+        },
+
+        {
+            "name": "MyCube",
+            "mesh": "__cube__",
+            "material": "demoCubeMaterial",
+            "transform": {
+                "position": [0,0.5,0],
+                "rotation": [0,45,0],
+                "scaling":  [1]
+            }
+        },
+
+        {
+            "name": "Suzanne1",
+            "mesh": "suzanne.3ds",
+            "transform": {
+                "position": [-5,1,0],
+                "rotation": [0,0,0],
+                "scaling":  [1]
+            }
+        },
+
+        {
+            "name": "Suzanne2",
+            "mesh": "suzanne.3ds",
+            "material": "demoSuzanneMaterial",
+            "transform": {
+                "position": [5,1,0],
+                "rotation": [0,0,0],
+                "scaling":  [1]
+            }
+        }
+    ],
+
+    "lights": [
+        {
+            "name": "sceneAmbient",
+            "type": "ambient",
+            "color": [0.6, 0.6, 1]
+        },
+
+        {
+            "name": "DirLight",
+            "type": "sun",
+            "color": [1],
+            "transform": {
+                "rotation": [20,45, 80]
+            }
+        },
+
+        {
+            "name": "PointLight1",
+            "type": "point",
+            "color": [1, 0, 0],
+            "power": 100
+        },
+        
+        {
+            "name": "PointLight2",
+            "type": "point",
+            "color": [0, 1, 0],
+            "power": 100
+        },
+        
+        {
+            "name": "PointLight3",
+            "type": "point",
+            "color": [0, 0, 1],
+            "power": 100
+        }
+
+    ]
+}

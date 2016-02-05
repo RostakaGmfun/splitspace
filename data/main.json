@@ -1,0 +1,22 @@
+{
+    "window": {
+        "caption": "splitspace demo",
+        "width": 800,
+        "height": 600,
+        "fullscreen": false,
+        "vsync": false
+    },
+
+    "logging": {
+        "level": "INFO"
+    },
+    
+    "scenes": [
+        "demoScene"
+    ],
+
+    "materials": [
+        "demoMaterials"
+    ]
+
+}
