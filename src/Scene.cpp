@@ -3,6 +3,7 @@
 #include <splitspace/LogManager.hpp>
 #include <splitspace/Entity.hpp>
 #include <splitspace/Object.hpp>
+#include <splitspace/ResourceManager.hpp>
 
 namespace splitspace {
 
@@ -10,6 +11,7 @@ Scene::Scene(Engine *e, SceneManifest *manifest):
                         Resource(e, manifest),
                         m_rootNode(nullptr),
                         m_sceneManager(e->sceneManager),
+                        m_resManager(e->resManager),
                         m_engine(e)
 {}
 
@@ -48,6 +50,15 @@ bool Scene::load() {
         if(!(*it)->parent) {
             (*it)->parent = m_rootNode;
         }
+        Object *o = new Object(m_engine, *it);
+        if(!o) {
+            m_logMan->logErr("(Scene) Out of memory");
+            return false;
+        }
+        if(!o->load()) {
+            m_logMan->logErr("(Scene) Object \""+(*it)->name+"\" failed to load");
+            continue;
+        } 
     }
 
     return true;

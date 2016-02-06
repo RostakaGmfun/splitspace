@@ -11,6 +11,8 @@ namespace splitspace {
 
 struct TextureManifest;
 
+class Texture;
+
 struct MaterialManifest: public ResourceManifest {
     glm::vec3 ambient;
     glm::vec3 diffuse;
@@ -26,11 +28,16 @@ struct MaterialManifest: public ResourceManifest {
 };
 
 class Material: public Resource {
+public:
     Material(Engine *e, MaterialManifest *manifest);
-    virtual ~Material();
+    virtual ~Material() { unload(); }
 
     virtual bool load();
     virtual void unload();
+
+private:
+    Texture *m_diffuseMap;
+    Texture *m_normalMap;
 };
 
 } // namespace splitspace

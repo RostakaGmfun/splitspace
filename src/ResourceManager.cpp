@@ -43,6 +43,23 @@ ResourceManager::~ResourceManager() {
     destroy();
 }
     
+TextureManifest *ResourceManager::readTextureManifest(std::string name) {
+
+    TextureManifest *tm = getTextureManifest(name);
+    if(!tm) {
+        m_logMan->logInfo("(ResourceManager) Creating texture manifest \""
+                          +name+"\"");
+        tm = new TextureManifest;
+        if(!tm) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            return nullptr;
+        }
+        tm->name = name;
+        addTextureManifest(tm);
+    }
+    return tm;
+}
+    
 bool ResourceManager::loadMaterialLib(std::vector<std::string> ml) {
     for(auto it = ml.begin();it!=ml.end();it++) {
         loadMaterialLib(*it);
@@ -89,30 +106,14 @@ bool ResourceManager::loadMaterialLib(std::string name) {
                 mm->diffuseMap = nullptr;
             } else {
                 std::string df = (*it)["diffuseMap"];
-                TextureManifest *tm = new TextureManifest;
-                if(!tm) {
-                    m_logMan->logErr("(ResourceManager) Out of memory");
-                    delete mm;
-                    return false;
-                }
-                tm->name = df;
-                addTextureManifest(tm);
-                mm->diffuseMap = tm;
+                mm->diffuseMap = readTextureManifest(df);
             }
             
             if((*it)["normalMap"].is_null()) {
                 mm->normalMap = nullptr;
             } else {
-                std::string df = (*it)["normalMap"];
-                TextureManifest *tm = new TextureManifest;
-                if(!tm) {
-                    m_logMan->logErr("(ResourceManager) Out of memory");
-                    delete mm;
-                    return false;
-                }
-                tm->name = df;
-                addTextureManifest(tm);
-                mm->diffuseMap = tm;
+                std::string nm = (*it)["normalMap"];
+                mm->normalMap = readTextureManifest(nm);
             }
             if((*it)["mapping"].is_null()) {
                 mm->mipmappingEnabled = false;
@@ -278,36 +279,74 @@ ShaderManifest *ResourceManager::getShaderManifest(std::string name) {
 }
 
 Texture *ResourceManager::loadTexture(std::string name) {
-    if(name.empty())
-        return nullptr;
-
-    if(m_textureCache.find(name)!=m_textureCache.end()) {
-        return m_textureCache[name];
-    }
-
-    auto it = m_textureManifests.find(name);
-    if(it == m_textureManifests.end()) {
-        m_logMan->logErr("(ResourceManager) No Texture with name \""+name+"\" found");
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Emptu resource names not supported");
         return nullptr;
     }
 
-    m_logMan->logInfo("(ResourceManager) Loading Texture \""+name+"\"");
+    if(m_textureCache.find(name)==m_textureCache.end()) {
 
-    Texture *tex = new Texture(m_engine, (it->second));
-    if(!tex) {
-        m_logMan->logErr("(ResourceManager) Out of memory");
+        auto it = m_textureManifests.find(name);
+        if(it == m_textureManifests.end()) {
+            m_logMan->logErr("(ResourceManager) No Texture with name \""+name+"\" found");
+            return nullptr;
+        }
+
+        m_logMan->logInfo("(ResourceManager) Loading Texture \""+name+"\"");
+
+        Texture *tex = new Texture(m_engine, (it->second));
+        if(!tex) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            return nullptr;
+        }
+        
+        if(!tex->load()) {
+            m_logMan->logErr("(ResourceManager) Error loading \""+name+"\"");
+            delete tex;
+            return nullptr;
+        }
+
+        m_textureCache[name] = tex;
+    }
+
+    Texture *t = m_textureCache[name];
+    t->incRefCount();
+    return t;
+}
+
+Material *ResourceManager::loadMaterial(std::string name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return nullptr;
+    }
+
+    if(m_materialManifests.find(name) == m_materialManifests.end()) {
+        m_logMan->logErr("(ResourceManager) Material \""+name+"\" does not exist");
         return nullptr;
     }
     
-    if(!tex->load()) {
-        m_logMan->logErr("(ResourceManager) Error loading \""+name+"\"");
-        delete tex;
-        return nullptr;
+    auto it = m_materialCache.find(name);
+
+    if(it == m_materialCache.end()) {
+        m_logMan->logInfo("(ResourceManager) Loading Material \""+name+"\"");
+        Material *m = new Material(m_engine, m_materialManifests[name]);
+        if(!m) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            return nullptr;
+        }
+
+        if(!m->load()) {
+            m_logMan->logErr("(ResourceManager) Failed to load Material \""+name+"\"");
+            return nullptr;
+        }
+
+        m_materialCache[name] = m;
     }
+    
+    Material *m = m_materialCache[name];
+    m->incRefCount();
+    return m;
 
-    m_textureCache[name] = tex;
-
-    return tex;
 }
 
 void ResourceManager::destroy() {

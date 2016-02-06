@@ -103,6 +103,7 @@ bool SceneManager::sceneCreate(std::string name) {
             m_logMan->logErr("(SceneManager) Out of memory");
             return false;
         }
+        objMan->name = objectName;
         objMan->meshManifest = new MeshManifest();
         try {
             objMan->meshManifest->name = jo["mesh"];

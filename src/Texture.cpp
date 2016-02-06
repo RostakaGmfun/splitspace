@@ -23,7 +23,8 @@ bool Texture::load() {
         return false;
     }
     
-    m_data = SOIL_load_image(m_manifest->name.c_str(), &m_width, &m_height,
+    std::string path = "data/textures/"+m_manifest->name;
+    m_data = SOIL_load_image(path.c_str(), &m_width, &m_height,
                                           &m_numChannels, SOIL_LOAD_AUTO);
     if(!m_data) {
         m_logMan->logErr("(Texture) Error loading texture from file " + m_manifest->name);

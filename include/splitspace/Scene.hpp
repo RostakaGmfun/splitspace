@@ -9,6 +9,7 @@ namespace splitspace {
 
 class Entity;
 class SceneManager;
+class ResourceManager;
 
 struct ObjectManifest;
 struct LightManifest;
@@ -31,6 +32,7 @@ public:
 private:
     Entity *m_rootNode;
     SceneManager *m_sceneManager;
+    ResourceManager *m_resManager;
     Engine *m_engine;
 };
 

@@ -24,6 +24,7 @@ class Entity: public Resource {
 public:
     
     Entity(Engine *e, EntityManifest *manifest, Entity *parent = nullptr);
+    virtual ~Entity() {}
     
     glm::mat4 getWorld() const { return m_world; }
     glm::vec3 getPos() const { return m_pos; }

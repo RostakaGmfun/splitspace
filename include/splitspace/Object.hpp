@@ -8,6 +8,9 @@ namespace splitspace {
 struct MaterialManifest;
 struct MeshManifest;
 
+class Material;
+class Mesh;
+
 struct ObjectManifest: public EntityManifest {
     MaterialManifest *materialManifest;
     MeshManifest *meshManifest;
@@ -22,6 +25,10 @@ public:
 
     virtual bool load();
     virtual void unload();
+
+private:
+    Material *m_material;
+    Mesh *m_mesh;
 };
 
 } // namespace splitspace

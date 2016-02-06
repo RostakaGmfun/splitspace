@@ -9,7 +9,8 @@ Resource::Resource(Engine *e, ResourceManifest *manifest):
                                                 m_refCount(0),
                                                 m_manifest(manifest),
                                                 m_logMan(e->logManager),
-                                                m_renderMan(e->renderManager)
+                                                m_renderMan(e->renderManager),
+                                                m_resMan(e->resManager)
 {}
 
 void Resource::incRefCount() {

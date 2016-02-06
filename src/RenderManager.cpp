@@ -101,9 +101,11 @@ bool RenderManager::createTexture(void *data, bool useMipmaps, ImageFormat forma
         case IMAGE_RGB:
             psz = 3;
             glformat = GL_RGB;
+        break;
         case IMAGE_RGBA:
             psz = 4;
             glformat = GL_RGBA;
+        break;
         default:
             m_logManager->logErr("(RenderManager) Unknown image format specified");
             glDeleteTextures(1, &n);

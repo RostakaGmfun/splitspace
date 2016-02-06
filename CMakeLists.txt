@@ -31,6 +31,8 @@ set(ENGINE_SRC
     src/Texture.cpp
     src/Entity.cpp
     src/Scene.cpp
+    src/Object.cpp
+    src/Material.cpp
     )
 
 set(DEMO_SRC

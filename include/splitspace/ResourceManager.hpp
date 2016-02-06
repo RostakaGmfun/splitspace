@@ -67,6 +67,9 @@ public:
     void invalidateAllCaches();
 
 private:
+    TextureManifest *readTextureManifest(std::string name);
+
+private:
     Engine *m_engine;
     LogManager *m_logMan;
 

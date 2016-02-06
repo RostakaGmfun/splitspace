@@ -12,6 +12,7 @@ struct ResourceManifest {
 class Engine;
 class LogManager;
 class RenderManager;
+class ResourceManager;
 
 class Resource {
 public:
@@ -30,6 +31,7 @@ protected:
     ResourceManifest *m_manifest;
     LogManager *m_logMan;
     RenderManager *m_renderMan;
+    ResourceManager *m_resMan;
 };
 
 } // namespace splitspace
