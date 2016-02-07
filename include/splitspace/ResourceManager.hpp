@@ -56,15 +56,14 @@ public:
     void unloadMaterial(std::string name);
     void unloadObject(std::string name);
 
-    int collectTextureGarbage();
-    int collectShaderGarbage();
-    int collectMeshGarbage();
-    int collectAllGarbage();
+    int collectGarbage();
 
-    void invalidateTextureCache();
-    void invalidateShaderCache();
-    void invalidateMeshCache();
-    void invalidateAllCaches();
+    void unloadAll();
+    void unloadTextures();
+    void unloadShaders();
+    void unloadMeshes();
+    void unloadMaterials();
+    void unloadObjects();
 
 private:
     TextureManifest *readTextureManifest(std::string name);

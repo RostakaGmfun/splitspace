@@ -95,20 +95,32 @@ bool SceneManager::sceneCreate(std::string name) {
         auto jo = (*it);
         if(jo["name"].is_null() || !jo["name"].is_string()) {
             m_logMan->logErr("(SceneManager) \""+name+"\": expected object name");
+            delete sceneMan;
             return false;
         }
         std::string objectName = jo["name"];
         objMan = new ObjectManifest();
         if(!objMan) {
             m_logMan->logErr("(SceneManager) Out of memory");
+            delete sceneMan;
             return false;
         }
         objMan->name = objectName;
-        objMan->meshManifest = new MeshManifest();
         try {
-            objMan->meshManifest->name = jo["mesh"];
+            objMan->meshManifest = m_resMan->getMeshManifest(jo["mesh"]);
+            if(!objMan->meshManifest) {
+                objMan->meshManifest = new MeshManifest;
+                if(!objMan->meshManifest) {
+                    m_logMan->logErr("(SceneManager) Out of Memory");
+                    delete objMan;
+                    delete sceneMan;
+                }
+                objMan->meshManifest->name = jo["mesh"];
+                m_resMan->addMeshManifest(objMan->meshManifest);
+            }
             if(jo["material"].is_null()) {
                 objMan->materialManifest = nullptr;
+                objMan->meshManifest->loadMaterial = true;
             } else {
                 std::string matName = jo["material"];
                 objMan->materialManifest = m_resMan->getMaterialManifest(matName);
@@ -124,6 +136,9 @@ bool SceneManager::sceneCreate(std::string name) {
                 readVec3(objMan->rot, jo["transform"]["rotation"]);
                 readVec3(objMan->scale, jo["transform"]["scaling"]);
             }
+            if(!jo["parent"].is_null()) {
+                objMan->parent = jo["parent"];
+            }
         } catch(std::domain_error e) {
             m_logMan->logErr("(SceneManager) \""+objectName+"\":");
             m_logMan->logErr("\tParse error: "+std::string(e.what()));
@@ -132,6 +147,7 @@ bool SceneManager::sceneCreate(std::string name) {
         }
         numObjects++;
         sceneMan->objects.push_back(objMan);
+        m_resMan->addObjectManifest(objMan);
     }
 
     Scene *scene = new Scene(m_engine, sceneMan);

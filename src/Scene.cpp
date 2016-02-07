@@ -35,7 +35,8 @@ bool Scene::load() {
     man->pos = glm::vec3(0);
     man->rot = glm::vec3(0);
     man->scale = glm::vec3(1);
-    man->parent = nullptr;
+    man->parent = "";
+    
 
     m_rootNode = new Entity(m_engine, man);
 
@@ -43,22 +44,26 @@ bool Scene::load() {
         m_logMan->logErr("(Scene) Out of memory");
         return false;
     }
+        
 
     SceneManifest *sm = static_cast<SceneManifest *>(m_manifest);
 
     for(auto it = sm->objects.begin();it!=sm->objects.end();it++) {
-        if(!(*it)->parent) {
-            (*it)->parent = m_rootNode;
-        }
-        Object *o = new Object(m_engine, *it);
+        Object *o = m_resMan->loadObject((*it)->name);
         if(!o) {
-            m_logMan->logErr("(Scene) Out of memory");
-            return false;
-        }
-        if(!o->load()) {
-            m_logMan->logErr("(Scene) Object \""+(*it)->name+"\" failed to load");
             continue;
-        } 
+        }
+        if((*it)->name.empty()) {
+            m_rootNode->addChild(o);
+        } else {
+            Entity *e = m_resMan->loadObject((*it)->name);
+            if(e) {
+                e->addChild(o);
+            } else {
+                m_rootNode->addChild(o);
+            }
+        }
+
     }
 
     return true;

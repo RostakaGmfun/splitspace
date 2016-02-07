@@ -17,7 +17,7 @@ struct EntityManifest: public ResourceManifest {
     glm::vec3 pos;
     glm::vec3 rot;
     glm::vec3 scale;
-    Entity *parent;
+    std::string parent;
 };
 
 class Entity: public Resource {

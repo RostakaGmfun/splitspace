@@ -33,6 +33,7 @@ set(ENGINE_SRC
     src/Scene.cpp
     src/Object.cpp
     src/Material.cpp
+    src/Mesh.cpp
     )
 
 set(DEMO_SRC

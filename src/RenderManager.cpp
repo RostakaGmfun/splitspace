@@ -166,6 +166,106 @@ bool RenderManager::createSampler(bool useMipmaps, TextureFiltering filtering,
     return true;
 }
 
+bool RenderManager::createMesh(const Vertex3D *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
+    if(!vData || numVerts<=0) {
+        return false;
+    }
+
+    GLuint vbo = 0, vao = 0;
+    if(!createVAOAndVBO(vao, vbo)) {
+        return false;
+    }
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3D), 
+                 vData, GL_STATIC_DRAW);
+    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //glEnableVertexAttribArray(g_AttribPositionLocation);
+
+    return true;
+}
+
+bool RenderManager::createMesh(const Vertex3DT *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
+    if(!vData || numVerts<=0) {
+        return false;
+    }
+
+    GLuint vbo = 0, vao = 0;
+    if(!createVAOAndVBO(vao, vbo)) {
+        return false;
+    }
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DT), 
+                 vData, GL_STATIC_DRAW);
+    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //glEnableVertexAttribArray(g_AttribPositionLocation);
+
+    return true;
+}
+
+bool RenderManager::createMesh(const Vertex3DN *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
+    if(!vData || numVerts<=0) {
+        return false;
+    }
+
+    GLuint vbo = 0, vao = 0;
+    if(!createVAOAndVBO(vao, vbo)) {
+        return false;
+    }
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DN), 
+                 vData, GL_STATIC_DRAW);
+    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //glEnableVertexAttribArray(g_AttribPositionLocation);
+
+    return true;
+}
+
+bool RenderManager::createMesh(const Vertex3DTN *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
+    if(!vData || numVerts<=0) {
+        return false;
+    }
+
+    GLuint vbo = 0, vao = 0;
+    if(!createVAOAndVBO(vao, vbo)) {
+        return false;
+    }
+
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DTN), 
+                 vData, GL_STATIC_DRAW);
+    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //glEnableVertexAttribArray(g_AttribPositionLocation);
+
+    return true;
+}
+    
+bool RenderManager::createVAOAndVBO(GLuint &vao, GLuint &vbo) {
+    glGenBuffers(1, &vbo);
+    if(!vbo) {
+        m_logManager->logErr("(RenderManager) Failed to create VBO");
+        return false;
+    }
+
+    glGenVertexArrays(1, &vao);
+    if(!vao) {
+        m_logManager->logErr("(RenderManager) Failed to create VAO");
+        return false;
+    }
+
+    return true;
+}
+
 void RenderManager::setupGL() {
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f,0.1f,0.1f,1.0f);

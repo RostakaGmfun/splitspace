@@ -25,13 +25,17 @@ bool Object::load() {
     if(om->materialManifest) {
         m_material = m_resMan->loadMaterial(om->materialManifest->name);
         if(!m_material) {
-            m_logMan->logErr("("+om->name+") Failed to load material");
             return false;
         }
     }
 
     if(!om->meshManifest) {
         m_logMan->logErr("("+om->name+") No mesh manifest specified");
+        return false;
+    }
+
+    m_mesh = m_resMan->loadMesh(om->meshManifest->name);
+    if(!m_mesh) {
         return false;
     }
 

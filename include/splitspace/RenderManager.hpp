@@ -5,6 +5,8 @@
 #include <vector>
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 
 namespace splitspace {
 
@@ -43,6 +45,25 @@ enum TextureUsage {
     TEX_RENDERTARGET
 };
 
+struct Vertex3D {
+    glm::vec3 pos;
+};
+
+struct Vertex3DT {
+    glm::vec3 pos;
+    glm::vec2 texcoord;
+};
+
+struct Vertex3DN {
+    glm::vec3 pos;
+    glm::vec3 normal;
+};
+
+struct Vertex3DTN {
+    glm::vec3 pos;
+    glm::vec2 texcoord;
+    glm::vec3 normal;
+};
 
 class RenderManager {
 public:
@@ -58,8 +79,11 @@ public:
     bool createTexture(void *data, bool useMipmaps, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createShader(const char *vs, const char *fs, std::vector<ImageFormat> outFormat, GLuint &glName);
-    bool createMesh(void *vData, VertexFormat format, int numVerts, Mesh *mesh, GLuint &vboName);
-    bool createMesh(void *vData, void *iData, VertexFormat format, int numVerts, int numInds, GLuint &vboName, GLuint &iboName);
+
+    bool createMesh(const Vertex3D *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
+    bool createMesh(const Vertex3DT *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
+    bool createMesh(const Vertex3DN *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
+    bool createMesh(const Vertex3DTN *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
 
     void logStats();
     int getFrameDrawCalls() const { return m_frameDrawCalls; }
@@ -67,6 +91,7 @@ public:
 
 private:
     void setupGL();
+    bool createVAOAndVBO(GLuint &vao, GLuint &vbo);
 
 private:
     WindowManager *m_winManager;

@@ -346,7 +346,74 @@ Material *ResourceManager::loadMaterial(std::string name) {
     Material *m = m_materialCache[name];
     m->incRefCount();
     return m;
+}
 
+Mesh *ResourceManager::loadMesh(std::string name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return nullptr;
+    }
+
+    if(m_meshManifests.find(name) == m_meshManifests.end()) {
+        m_logMan->logErr("(ResourceManager) Mesh \""+name+"\" does not exist");
+        return nullptr;
+    }
+    
+    auto it = m_meshCache.find(name);
+
+    if(it == m_meshCache.end()) {
+        m_logMan->logInfo("(ResourceManager) Loading Mesh \""+name+"\"");
+        Mesh *m = new Mesh(m_engine, m_meshManifests[name]);
+        if(!m) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            return nullptr;
+        }
+
+        if(!m->load()) {
+            m_logMan->logErr("(ResourceManager) Failed to load Mesh \""+name+"\"");
+            return nullptr;
+        }
+
+        m_meshCache[name] = m;
+    }
+    
+    Mesh *m = m_meshCache[name];
+    m->incRefCount();
+    return m;
+}
+
+Object *ResourceManager::loadObject(std::string name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return nullptr;
+    }
+
+    if(m_objectManifests.find(name) == m_objectManifests.end()) {
+        m_logMan->logErr("(ResourceManager) Object \""+name+"\" does not exist");
+        return nullptr;
+    }
+    
+    auto it = m_objectCache.find(name);
+
+    if(it == m_objectCache.end()) {
+        m_logMan->logInfo("(ResourceManager) Loading Object \""+name+"\"");
+        Object *m = new Object(m_engine, m_objectManifests[name]);
+        if(!m) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            return nullptr;
+        }
+
+        if(!m->load()) {
+            m_logMan->logErr("(ResourceManager) Failed to load Object \""+name+"\"");
+            return nullptr;
+        }
+
+        m_objectCache[name] = m;
+    }
+    
+    Object *m = m_objectCache[name];
+    m->incRefCount();
+    return m;
 }
 
 void ResourceManager::destroy() {
