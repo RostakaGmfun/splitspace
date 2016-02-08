@@ -8,6 +8,8 @@ namespace splitspace {
 
 class LogManager;
 struct TextureManifest: public ResourceManifest {
+    TextureManifest(): ResourceManifest(RES_TEXTURE)
+    {}
     bool mipmappingEnabled;
 };
 

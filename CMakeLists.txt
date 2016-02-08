@@ -23,7 +23,6 @@ set(ENGINE_SRC
     src/EventManager.cpp
     src/WindowManager.cpp
     src/RenderManager.cpp
-    src/SceneManager.cpp
     src/ResourceManager.cpp
     src/PhysicsManager.cpp
     src/Config.cpp

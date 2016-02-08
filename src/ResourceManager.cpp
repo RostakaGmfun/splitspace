@@ -5,6 +5,7 @@
 #include <splitspace/Object.hpp>
 #include <splitspace/Material.hpp>
 #include <splitspace/Mesh.hpp>
+#include <splitspace/Scene.hpp>
 #include <splitspace/RenderManager.hpp>
 
 #include <algorithm>
@@ -47,15 +48,13 @@ TextureManifest *ResourceManager::readTextureManifest(std::string name) {
 
     TextureManifest *tm = getTextureManifest(name);
     if(!tm) {
-        m_logMan->logInfo("(ResourceManager) Creating texture manifest \""
-                          +name+"\"");
         tm = new TextureManifest;
         if(!tm) {
             m_logMan->logErr("(ResourceManager) Out of memory");
             return nullptr;
         }
         tm->name = name;
-        addTextureManifest(tm);
+        addManifest(tm);
     }
     return tm;
 }
@@ -153,267 +152,217 @@ bool ResourceManager::loadMaterialLib(std::string name) {
             delete mm;
             return false;
         }
-        addMaterialManifest(mm);
+        addManifest(mm);
    
     }
     
     return true;
 }
 
-bool ResourceManager::addTextureManifest(TextureManifest *tm) {
-    if(!tm)
-        return false;
+bool ResourceManager::createSceneManifests(std::vector<std::string> scenes) {
+    for(auto it = scenes.begin();it!=scenes.end();it++) {
+        if(!createScene(*it))
+            return false;
+    }
+    return true;
+}
 
-    if(tm->name.empty()) {
-        m_logMan->logErr("(ResourceManager) empty resource names not supported");
+bool ResourceManager::createScene(std::string name) {
+    SceneManifest *sceneMan = nullptr;
+
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty scene names not supported");
+        return false;
+    }
+    
+    std::ifstream f("data/scenes/"+name+".json");
+    if(!f.is_open()) {
+        m_logMan->logErr("(ResourceManager) Error opening data/scenes/"+name+".json");
+        return false;
+    }
+    
+    sceneMan = new SceneManifest;
+    if(!sceneMan) {
+        m_logMan->logErr("(ResourceManager) Out of memory");
         return false;
     }
 
-    if(m_textureManifests.find(tm->name)!=m_textureManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Texture with name \""
-                                    +tm->name+"\" already exists");
+    sceneMan->name = name;
+
+    json jscene; 
+    try {
+        jscene << f;
+    } catch(std::domain_error e) {
+        m_logMan->logErr("(ResourceManager) data/scenes/"+name+".json");
+        m_logMan->logErr("\tParse error: "+std::string(e.what()));
         return false;
     }
 
-    m_textureManifests[tm->name] = tm;
+    auto jobjects = jscene["objects"];
+    if(jobjects.is_null() || !jobjects.is_array()) {
+        m_logMan->logErr("(ResourceManager) \""+name+"\": \"objects\" array expected");
+        return false;
+    }
+
+    int numObjects = 0;
+    ObjectManifest *objMan = nullptr;
+    for(auto it = jobjects.begin();it!=jobjects.end();it++) {
+        auto jo = (*it);
+        if(jo["name"].is_null() || !jo["name"].is_string()) {
+            m_logMan->logErr("(ResourceManager) \""+name+"\": expected object name");
+            delete sceneMan;
+            return false;
+        }
+        std::string objectName = jo["name"];
+        objMan = new ObjectManifest();
+        if(!objMan) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            delete sceneMan;
+            return false;
+        }
+        objMan->name = objectName;
+        try {
+            objMan->meshManifest = static_cast<MeshManifest *>(getManifest(jo["mesh"]));
+            if(!objMan->meshManifest) {
+                objMan->meshManifest = new MeshManifest;
+                if(!objMan->meshManifest) {
+                    m_logMan->logErr("(ResourceManager) Out of Memory");
+                    delete objMan;
+                    delete sceneMan;
+                }
+                objMan->meshManifest->name = jo["mesh"];
+                addManifest(objMan->meshManifest);
+            }
+            if(jo["material"].is_null()) {
+                objMan->materialManifest = nullptr;
+                objMan->meshManifest->loadMaterial = true;
+            } else {
+                std::string matName = jo["material"];
+                objMan->materialManifest = static_cast<MaterialManifest *>(getManifest(matName));
+                if(!objMan->materialManifest) {
+                    m_logMan->logWarn("(ResourceManager) Material \""+matName+"\" not found");
+                    // TODO: set default material
+                }
+            }
+            if(jo["transform"].is_null()) {
+                objMan->scale = glm::vec3(1);
+            } else {
+                readVec3(objMan->pos, jo["transform"]["position"]);
+                readVec3(objMan->rot, jo["transform"]["rotation"]);
+                readVec3(objMan->scale, jo["transform"]["scaling"]);
+            }
+            if(!jo["parent"].is_null()) {
+                objMan->parent = jo["parent"];
+            }
+        } catch(std::domain_error e) {
+            m_logMan->logErr("(ResourceManager) \""+objectName+"\":");
+            m_logMan->logErr("\tParse error: "+std::string(e.what()));
+            if(objMan)
+                delete objMan;
+        }
+        numObjects++;
+        sceneMan->objects.push_back(objMan);
+        addManifest(objMan);
+    }
+    addManifest(sceneMan);
+    m_logMan->logInfo("(ResourceManager) Created manifest for Scene \""+name+"\"");
 
     return true;
 }
 
-bool ResourceManager::addObjectManifest(ObjectManifest *om) {
-    if(!om)
-        return false;
 
-    if(om->name.empty()) {
-        m_logMan->logErr("(ResourceManager) empty resource names not supported");
+bool ResourceManager::addManifest(ResourceManifest *rm) {
+    if(!rm)
         return false;
-    }
-
-    if(m_objectManifests.find(om->name)!=m_objectManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Object with name \""
-                                    +om->name+"\" already exists");
+    if(rm->name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resorce names not supported");
         return false;
     }
 
-    m_objectManifests[om->name] = om;
+    if(m_resourceManifests.find(rm->name)!=m_resourceManifests.end()) {
+        m_logMan->logErr("(ResourceManager) Resource with name \""
+                                            +rm->name+"\" already exists");
+        return false;
+    }
+    
+    m_resourceManifests[rm->name] = rm;
 
     return true;
 }
 
-bool ResourceManager::addMeshManifest(MeshManifest *mm) {
-    if(!mm)
-        return false;
-
-    if(mm->name.empty()) {
-        m_logMan->logErr("(ResourceManager) empty resource names not supported");
-        return false;
+ResourceManifest *ResourceManager::getManifest(std::string name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return nullptr;
     }
-
-    if(m_meshManifests.find(mm->name)!=m_meshManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Mesh with name \""
-                                    +mm->name+"\" already exists");
-        return false;
-    }
-
-    m_meshManifests[mm->name] = mm;
-
-    return true;
-}
-
-bool ResourceManager::addMaterialManifest(MaterialManifest *mm) {
-    if(!mm)
-        return false;
-
-    if(mm->name.empty()) {
-        m_logMan->logErr("(ResourceManager) empty resource names not supported");
-        return false;
-    }
-
-    if(m_materialManifests.find(mm->name)!=m_materialManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Material with name \""
-                                    +mm->name+"\" already exists");
-        return false;
-    }
-
-    m_materialManifests[mm->name] = mm;
-
-    return true;
+    auto it = m_resourceManifests.find(name);
+    if(it == m_resourceManifests.end())
+        return nullptr;
+    return it->second;
 }
     
-TextureManifest *ResourceManager::getTextureManifest(std::string name) {
-    auto it = m_textureManifests.find(name);
-    if(it == m_textureManifests.end())
-        return nullptr;
-    return it->second;
-}
-
-ObjectManifest *ResourceManager::getObjectManifest(std::string name) {
-    auto it = m_objectManifests.find(name);
-    if(it == m_objectManifests.end())
-        return nullptr;
-    return it->second;
-
-}
-
-MeshManifest *ResourceManager::getMeshManifest(std::string name) {
-    auto it = m_meshManifests.find(name);
-    if(it == m_meshManifests.end())
-        return nullptr;
-    return it->second;
-
-}
-
-MaterialManifest *ResourceManager::getMaterialManifest(std::string name) {
-    auto it = m_materialManifests.find(name);
-    if(it == m_materialManifests.end())
-        return nullptr;
-    return it->second;
-}
-
-ShaderManifest *ResourceManager::getShaderManifest(std::string name) {
-    auto it = m_shaderManifests.find(name);
-    if(it == m_shaderManifests.end())
-        return nullptr;
-    return it->second;
-
-}
-
-Texture *ResourceManager::loadTexture(std::string name) {
+Resource *ResourceManager::loadResource(std::string name) {
     if(name.empty()) {
-        m_logMan->logErr("(ResourceManager) Emptu resource names not supported");
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
         return nullptr;
     }
+    
+    if(m_resourceCache.find(name)==m_resourceCache.end()) {
 
-    if(m_textureCache.find(name)==m_textureCache.end()) {
-
-        auto it = m_textureManifests.find(name);
-        if(it == m_textureManifests.end()) {
-            m_logMan->logErr("(ResourceManager) No Texture with name \""+name+"\" found");
+        auto it = m_resourceManifests.find(name);
+        if(it == m_resourceManifests.end()) {
+            m_logMan->logErr("(ResourceManager) No Resource with name \""+name+"\" found");
             return nullptr;
         }
 
-        m_logMan->logInfo("(ResourceManager) Loading Texture \""+name+"\"");
+        m_logMan->logInfo("(ResourceManager) Loading Resource \""+name+"\"");
 
-        Texture *tex = new Texture(m_engine, (it->second));
-        if(!tex) {
+        Resource *res;
+
+        switch(it->second->type) {
+            case RES_TEXTURE: {
+                TextureManifest *m = static_cast<TextureManifest *>(it->second);
+                res = new Texture(m_engine, m);
+            break; }
+            case RES_MATERIAL: {
+                MaterialManifest *m = static_cast<MaterialManifest *>(it->second);
+                res = new Material(m_engine, m);
+            break; }
+            case RES_MESH: {
+                MeshManifest *m = static_cast<MeshManifest *>(it->second);
+                res = new Mesh(m_engine, m);
+            break; }
+            case RES_OBJECT: {
+                ObjectManifest *m = static_cast<ObjectManifest *>(it->second);
+                res = new Object(m_engine, m);
+            break; }
+            case RES_SCENE: {
+                SceneManifest *m = static_cast<SceneManifest *>(it->second);
+                res = new Scene(m_engine, m);
+            break; }
+            default:
+                m_logMan->logErr("(ResourceManager) Unknown or unsupported Resource");
+                return nullptr;
+        }
+
+        if(!res) {
             m_logMan->logErr("(ResourceManager) Out of memory");
             return nullptr;
         }
         
-        if(!tex->load()) {
+        res->incRefCount();
+        if(!res->load()) {
             m_logMan->logErr("(ResourceManager) Error loading \""+name+"\"");
-            delete tex;
+            delete res;
             return nullptr;
         }
 
-        m_textureCache[name] = tex;
+        m_resourceCache[name] = res;
     }
 
-    Texture *t = m_textureCache[name];
-    t->incRefCount();
-    return t;
-}
+    Resource *r = m_resourceCache[name];
+    return r;
 
-Material *ResourceManager::loadMaterial(std::string name) {
-    if(name.empty()) {
-        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
-        return nullptr;
-    }
-
-    if(m_materialManifests.find(name) == m_materialManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Material \""+name+"\" does not exist");
-        return nullptr;
-    }
-    
-    auto it = m_materialCache.find(name);
-
-    if(it == m_materialCache.end()) {
-        m_logMan->logInfo("(ResourceManager) Loading Material \""+name+"\"");
-        Material *m = new Material(m_engine, m_materialManifests[name]);
-        if(!m) {
-            m_logMan->logErr("(ResourceManager) Out of memory");
-            return nullptr;
-        }
-
-        if(!m->load()) {
-            m_logMan->logErr("(ResourceManager) Failed to load Material \""+name+"\"");
-            return nullptr;
-        }
-
-        m_materialCache[name] = m;
-    }
-    
-    Material *m = m_materialCache[name];
-    m->incRefCount();
-    return m;
-}
-
-Mesh *ResourceManager::loadMesh(std::string name) {
-    if(name.empty()) {
-        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
-        return nullptr;
-    }
-
-    if(m_meshManifests.find(name) == m_meshManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Mesh \""+name+"\" does not exist");
-        return nullptr;
-    }
-    
-    auto it = m_meshCache.find(name);
-
-    if(it == m_meshCache.end()) {
-        m_logMan->logInfo("(ResourceManager) Loading Mesh \""+name+"\"");
-        Mesh *m = new Mesh(m_engine, m_meshManifests[name]);
-        if(!m) {
-            m_logMan->logErr("(ResourceManager) Out of memory");
-            return nullptr;
-        }
-
-        if(!m->load()) {
-            m_logMan->logErr("(ResourceManager) Failed to load Mesh \""+name+"\"");
-            return nullptr;
-        }
-
-        m_meshCache[name] = m;
-    }
-    
-    Mesh *m = m_meshCache[name];
-    m->incRefCount();
-    return m;
-}
-
-Object *ResourceManager::loadObject(std::string name) {
-    if(name.empty()) {
-        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
-        return nullptr;
-    }
-
-    if(m_objectManifests.find(name) == m_objectManifests.end()) {
-        m_logMan->logErr("(ResourceManager) Object \""+name+"\" does not exist");
-        return nullptr;
-    }
-    
-    auto it = m_objectCache.find(name);
-
-    if(it == m_objectCache.end()) {
-        m_logMan->logInfo("(ResourceManager) Loading Object \""+name+"\"");
-        Object *m = new Object(m_engine, m_objectManifests[name]);
-        if(!m) {
-            m_logMan->logErr("(ResourceManager) Out of memory");
-            return nullptr;
-        }
-
-        if(!m->load()) {
-            m_logMan->logErr("(ResourceManager) Failed to load Object \""+name+"\"");
-            return nullptr;
-        }
-
-        m_objectCache[name] = m;
-    }
-    
-    Object *m = m_objectCache[name];
-    m->incRefCount();
-    return m;
 }
 
 void ResourceManager::destroy() {

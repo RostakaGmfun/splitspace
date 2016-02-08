@@ -23,7 +23,7 @@ bool Object::load() {
 
     ObjectManifest *om = static_cast<ObjectManifest *>(m_manifest);
     if(om->materialManifest) {
-        m_material = m_resMan->loadMaterial(om->materialManifest->name);
+        m_material = static_cast<Material *>(m_resMan->loadResource(om->materialManifest->name));
         if(!m_material) {
             return false;
         }
@@ -34,7 +34,7 @@ bool Object::load() {
         return false;
     }
 
-    m_mesh = m_resMan->loadMesh(om->meshManifest->name);
+    m_mesh = static_cast<Mesh *>(m_resMan->loadResource(om->meshManifest->name));
     if(!m_mesh) {
         return false;
     }

@@ -32,7 +32,6 @@ private:
     bool initEvents();
     bool initWindow();
     bool initResources();
-    bool initScenes();
     bool initRendering();
     bool initPhysics();
 
@@ -44,7 +43,6 @@ public:
     EventManager *eventManager;
     WindowManager *windowManager;
     ResourceManager *resManager;
-    SceneManager *sceneManager;
     RenderManager *renderManager;
     PhysicsManager *physManager;
 

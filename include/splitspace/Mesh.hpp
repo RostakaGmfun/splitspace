@@ -7,6 +7,8 @@
 namespace splitspace {
 
 struct MeshManifest: public ResourceManifest {
+    MeshManifest(): ResourceManifest(RES_MESH)
+    {}
     bool loadMaterial;
 };
 

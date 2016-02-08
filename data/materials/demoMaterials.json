@@ -11,8 +11,8 @@
         "ambient":     [0.8],
         "diffuse":     [0.45, 0.77, 0.2],
         "specular":    [0.2, 0, 0.95],
-        "diffuseMap":  "demoPlane.png",
-        "normalMap":   "demoPlane_normal.png",
+        "diffuseMap":  "floor.png",
+        "normalMap":   "floor_normal.png",
         "mappping": {
             "repeat": [10,10],
             "filtering": "linear"
@@ -24,8 +24,8 @@
         "ambient":     [0.8],
         "diffuse":     [0.45, 0.77, 0.2],
         "specular":    [0.2, 0, 0.95],
-        "diffuseMap":  "demoCube.png",
-        "normalMap":   "demoCube_normal.png",
+        "diffuseMap":  "crate.png",
+        "normalMap":   "crate_normal.png",
         "mappping": {
             "repeat": [10],
             "filtering": "linear",

@@ -14,6 +14,8 @@ struct TextureManifest;
 class Texture;
 
 struct MaterialManifest: public ResourceManifest {
+    MaterialManifest(): ResourceManifest(RES_MATERIAL)
+    {}
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;

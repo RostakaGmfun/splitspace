@@ -1,6 +1,7 @@
 #include <splitspace/Engine.hpp>
 #include <splitspace/EventManger.hpp>
 #include <splitspace/SceneManager.hpp>
+#include <splitspace/ResourceManager.hpp>
 
 #include <iostream>
 
@@ -26,7 +27,7 @@ public:
 int main() {
     if(!engine.init())
         return 1;
-    if(!engine.sceneManager->loadScene("demoScene"))
+    if(!engine.resManager->loadResource("demoScene"))
         return 1;
 
     engine.eventManager->addListener(new MyListener()); 

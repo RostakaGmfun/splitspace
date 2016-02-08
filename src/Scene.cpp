@@ -10,7 +10,6 @@ namespace splitspace {
 Scene::Scene(Engine *e, SceneManifest *manifest):
                         Resource(e, manifest),
                         m_rootNode(nullptr),
-                        m_sceneManager(e->sceneManager),
                         m_resManager(e->resManager),
                         m_engine(e)
 {}
@@ -49,14 +48,14 @@ bool Scene::load() {
     SceneManifest *sm = static_cast<SceneManifest *>(m_manifest);
 
     for(auto it = sm->objects.begin();it!=sm->objects.end();it++) {
-        Object *o = m_resMan->loadObject((*it)->name);
+        Object *o = static_cast<Object *>(m_resMan->loadResource((*it)->name));
         if(!o) {
             continue;
         }
         if((*it)->name.empty()) {
             m_rootNode->addChild(o);
         } else {
-            Entity *e = m_resMan->loadObject((*it)->name);
+            Entity *e = static_cast<Object *>(m_resMan->loadResource((*it)->name));
             if(e) {
                 e->addChild(o);
             } else {

@@ -5,8 +5,22 @@
 
 namespace splitspace {
 
+enum ResourceType {
+    RES_UNKNOWN,
+    RES_TEXTURE,
+    RES_MATERIAL,
+    RES_ENTITY,
+    RES_OBJECT,
+    RES_MESH,
+    RES_SHADER,
+    RES_SCENE
+};
+
 struct ResourceManifest {
+    ResourceManifest(ResourceType t): type(t)
+    {}
     std::string name;
+    ResourceType type;
 };
 
 class Engine;
@@ -25,6 +39,8 @@ public:
     void incRefCount();
     void decRefCount();
     int getRefCount() const;
+
+    ResourceType getType() const { return m_manifest?m_manifest->type:RES_UNKNOWN; }
 
 protected:
     int m_refCount;

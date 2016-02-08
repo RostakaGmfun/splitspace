@@ -2,7 +2,6 @@
 #include <splitspace/LogManager.hpp>
 #include <splitspace/EventManger.hpp>
 #include <splitspace/WindowManager.hpp>
-#include <splitspace/SceneManager.hpp>
 #include <splitspace/RenderManager.hpp>
 #include <splitspace/ResourceManager.hpp>
 #include <splitspace/PhysicsManager.hpp>
@@ -17,7 +16,6 @@ Engine::Engine():   logManager(nullptr),
                     eventManager(nullptr),
                     windowManager(nullptr),
                     resManager(nullptr),
-                    sceneManager(nullptr),
                     renderManager(nullptr),
                     physManager(nullptr),
                     config(nullptr),
@@ -42,8 +40,6 @@ bool Engine::init() {
         return false;
     if(!initResources())
         return false;
-    if(!initScenes())
-        return false;
     if(!initRendering())
         return false;
     if(!initPhysics())
@@ -61,7 +57,6 @@ void Engine::mainLoop() {
         cur = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
         windowManager->collectEvents();
         eventManager->emitEvent(e);
-        sceneManager->update((cur.count()-last.count())/1000.f);
         renderManager->render();
         last = cur;
     }
@@ -110,16 +105,14 @@ bool Engine::initResources() {
         return false;
     }
 
-    return resManager->loadMaterialLib(config->matLibs);
-}
-
-bool Engine::initScenes() {
-    sceneManager = new SceneManager(this); 
-    if(!sceneManager) {
-        logManager->logErr("(Engine) Memory error");
+    if(!resManager->loadMaterialLib(config->matLibs)) {
         return false;
     }
-    return sceneManager->init(config->scenes);
+
+    if(!resManager->createSceneManifests(config->scenes)) {
+        return false;
+    }
+    return true;
 }
 
 bool Engine::initRendering() {
@@ -146,8 +139,6 @@ void Engine::destroyManagers() {
         delete windowManager;
     if(resManager)
         delete resManager;
-    if(sceneManager)
-        delete sceneManager;
     if(renderManager)
         delete renderManager;
     if(physManager)

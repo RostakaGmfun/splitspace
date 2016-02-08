@@ -25,7 +25,7 @@ bool Material::load() {
     MaterialManifest *mm = static_cast<MaterialManifest *>(m_manifest);
 
     if(mm->diffuseMap) {
-        m_diffuseMap = m_resMan->loadTexture(mm->diffuseMap->name);
+        m_diffuseMap = static_cast<Texture *>(m_resMan->loadResource(mm->diffuseMap->name));
         if(!m_diffuseMap) {
             m_logMan->logErr("("+mm->name+") Error loading diffuse map");
             return false;
@@ -33,7 +33,7 @@ bool Material::load() {
     }
 
     if(mm->normalMap) {
-        m_normalMap = m_resMan->loadTexture(mm->normalMap->name);
+        m_normalMap = static_cast<Texture *>(m_resMan->loadResource(mm->normalMap->name));
         if(!m_normalMap) {
             m_logMan->logErr("("+mm->name+") Error loading normal map");
             return false;

@@ -12,6 +12,8 @@ class Material;
 class Mesh;
 
 struct ObjectManifest: public EntityManifest {
+    ObjectManifest(): EntityManifest(RES_OBJECT)
+    {}
     MaterialManifest *materialManifest;
     MeshManifest *meshManifest;
 };

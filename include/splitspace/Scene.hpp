@@ -15,6 +15,8 @@ struct ObjectManifest;
 struct LightManifest;
 
 struct SceneManifest: public ResourceManifest {
+    SceneManifest(): ResourceManifest(RES_SCENE)
+    {}
     std::vector<ObjectManifest *> objects;
     std::vector<LightManifest *> lights;
 };
@@ -31,7 +33,6 @@ public:
 
 private:
     Entity *m_rootNode;
-    SceneManager *m_sceneManager;
     ResourceManager *m_resManager;
     Engine *m_engine;
 };
