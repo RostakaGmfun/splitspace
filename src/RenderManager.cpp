@@ -81,7 +81,7 @@ bool RenderManager::init(bool vsync) {
     return true;
 }
     
-bool RenderManager::createTexture(void *data, bool useMipmaps, ImageFormat format, int w, int h, GLuint &glName) {
+bool RenderManager::createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName) {
     GLuint n = 0;
     glGenTextures(1, &n);
     if(!n) {
@@ -114,10 +114,7 @@ bool RenderManager::createTexture(void *data, bool useMipmaps, ImageFormat forma
     
     glTexImage2D(GL_TEXTURE_2D, 0, glformat, w, h, 0, glformat, GL_UNSIGNED_BYTE, data);
     
-    if(useMipmaps) {
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
+    glGenerateMipmap(GL_TEXTURE_2D);
 
     int memSize = w*h*psz;
     

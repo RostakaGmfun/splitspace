@@ -44,7 +44,7 @@ ResourceManager::~ResourceManager() {
     destroy();
 }
     
-TextureManifest *ResourceManager::readTextureManifest(std::string name) {
+TextureManifest *ResourceManager::readTextureManifest(const std::string &name) {
 
     TextureManifest *tm = static_cast<TextureManifest *>(getManifest(name));
     if(!tm) {
@@ -59,7 +59,7 @@ TextureManifest *ResourceManager::readTextureManifest(std::string name) {
     return tm;
 }
     
-bool ResourceManager::loadMaterialLib(std::vector<std::string> ml) {
+bool ResourceManager::loadMaterialLib(const std::vector<std::string> &ml) {
     for(auto it = ml.begin();it!=ml.end();it++) {
         loadMaterialLib(*it);
     }
@@ -67,7 +67,7 @@ bool ResourceManager::loadMaterialLib(std::vector<std::string> ml) {
     return true;
 }
 
-bool ResourceManager::loadMaterialLib(std::string name) {
+bool ResourceManager::loadMaterialLib(const std::string &name) {
     MaterialManifest *mm = nullptr;
     std::ifstream f("data/materials/"+name+".json");
     if(!f.is_open()) {
@@ -159,7 +159,7 @@ bool ResourceManager::loadMaterialLib(std::string name) {
     return true;
 }
 
-bool ResourceManager::createSceneManifests(std::vector<std::string> scenes) {
+bool ResourceManager::createSceneManifests(const std::vector<std::string> &scenes) {
     for(auto it = scenes.begin();it!=scenes.end();it++) {
         if(!createScene(*it))
             return false;
@@ -167,7 +167,7 @@ bool ResourceManager::createSceneManifests(std::vector<std::string> scenes) {
     return true;
 }
 
-bool ResourceManager::createScene(std::string name) {
+bool ResourceManager::createScene(const std::string &name) {
     SceneManifest *sceneMan = nullptr;
 
     if(name.empty()) {
@@ -290,7 +290,7 @@ bool ResourceManager::addManifest(ResourceManifest *rm) {
     return true;
 }
 
-ResourceManifest *ResourceManager::getManifest(std::string name) {
+ResourceManifest *ResourceManager::getManifest(const std::string &name) {
     if(name.empty()) {
         m_logMan->logErr("(ResourceManager) Empty resource names not supported");
         return nullptr;
@@ -301,7 +301,7 @@ ResourceManifest *ResourceManager::getManifest(std::string name) {
     return it->second;
 }
     
-Resource *ResourceManager::loadResource(std::string name) {
+Resource *ResourceManager::loadResource(const std::string &name) {
     if(name.empty()) {
         m_logMan->logErr("(ResourceManager) Empty resource names not supported");
         return nullptr;

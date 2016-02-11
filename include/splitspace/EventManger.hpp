@@ -75,7 +75,7 @@ struct UpdateEvent: public Event {
 
 class EventListener {
 public:
-    EventListener(int32_t mask, std::string name): m_mask(mask), m_name(name)
+    EventListener(int32_t mask, const std::string &name): m_mask(mask), m_name(name)
     {}
     virtual ~EventListener() {}
 
@@ -83,7 +83,7 @@ public:
 
     virtual void onEvent(Event *event) = 0;
 
-    std::string getName() const { return m_name; }
+    const std::string &getName() const { return m_name; }
 
 protected:
     int32_t m_mask;

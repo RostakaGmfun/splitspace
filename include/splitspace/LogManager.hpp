@@ -14,12 +14,12 @@ enum LogLevel {
 
 class LogManager {
 public:
-    LogManager(std::string sinkFname);
+    LogManager(const std::string &sinkFname);
     ~LogManager();
 
-    void logErr(std::string str);
-    void logWarn(std::string str);
-    void logInfo(std::string str);
+    void logErr(const std::string &str);
+    void logWarn(const std::string &str);
+    void logInfo(const std::string &str);
 
     void flush();
 

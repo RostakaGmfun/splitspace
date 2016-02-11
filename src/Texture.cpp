@@ -50,12 +50,7 @@ bool Texture::load() {
             return false;
     }
 
-    TextureManifest *manifest = static_cast<TextureManifest *>(m_manifest);
-    if(!m_renderMan->createTexture(m_data, manifest->mipmappingEnabled,
-                                           format,
-                                           m_width,
-                                           m_height,
-                                           m_glName)) {
+    if(!m_renderMan->createTexture(m_data, format, m_width, m_height, m_glName)) {
         m_logMan->logErr("(Texture) Error creating GL texture");
         unload();
         return false;

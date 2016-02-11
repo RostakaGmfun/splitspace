@@ -76,9 +76,9 @@ public:
     void render();
     void destroy();
 
-    bool createTexture(void *data, bool useMipmaps, ImageFormat format, int w, int h, GLuint &glName);
+    bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
-    bool createShader(const char *vs, const char *fs, std::vector<ImageFormat> outFormat, GLuint &glName);
+    bool createShader(const char *vs, const char *fs, const std::vector<ImageFormat> &outFormat, GLuint &glName);
 
     bool createMesh(const Vertex3D *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
     bool createMesh(const Vertex3DT *vData, int numVerts, GLuint &vboName, GLuint &vaoName);

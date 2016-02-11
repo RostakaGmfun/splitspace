@@ -14,7 +14,7 @@ Config::Config()
 Config::~Config()
 {}
 
-bool Config::parse(std::string path) {
+bool Config::parse(const std::string &path) {
     std::ifstream f(path);
     if(!f.is_open())
         return false;
@@ -28,7 +28,7 @@ bool Config::parse(std::string path) {
             fillDefaultWindow();
         } else {
             if(!jwindow.is_object()) {
-                std::cerr << "[main.json] window should be object!" << std::endl;
+                std::cerr << "[" << path << "]" << " window should be object!" << std::endl;
                 return false;
             }
             window.width = jwindow["width"];
@@ -57,18 +57,18 @@ bool Config::parse(std::string path) {
                 log.level = LOG_WARN; // default
         }
     } catch(std::domain_error e) {
-        std::cerr << "[main.json] Parse error:" << e.what() << std::endl;
+        std::cerr << "[" << path << "]" << " Parse error:" << e.what() << std::endl;
         return false;
     }
 
     auto jscenes = jconfig["scenes"];
     if(jscenes.is_null()) {
-        std::cerr << "[main.json]  Error! no scenes found"  << std::endl;
+        std::cerr << "[" << path << "]" << "  Error! no scenes found"  << std::endl;
         return false;
     }
 
     if(!jscenes.is_array()) {
-        std::cerr << "[main.json] \"scenes\" expected to be array of strings" << std::endl;
+        std::cerr << "[" << path << "]" << " \"scenes\" expected to be array of strings" << std::endl;
         return false;
     }
 
@@ -77,18 +77,18 @@ bool Config::parse(std::string path) {
             scenes.push_back(*it);
         }
     } catch(std::domain_error e) {
-        std::cerr << "[main.json] \"scenes\": expected array of strings" << std::endl;
+        std::cerr << "[" << path << "]" << " \"scenes\": expected array of strings" << std::endl;
         return false;
     }
     
     auto jmatlibs = jconfig["materials"];
     if(jmatlibs.is_null()) {
-        std::cerr << "[main.json]  Error! no material libraries found"  << std::endl;
+        std::cerr << "[" << path << "]" << "  Error! no material libraries found"  << std::endl;
         return false;
     }
 
     if(!jmatlibs.is_array()) {
-        std::cerr << "[main.json] \"materials\" expected to be array of strings" << std::endl;
+        std::cerr << "[" << path << "]" << " \"materials\" expected to be array of strings" << std::endl;
         return false;
     }
 
@@ -97,7 +97,7 @@ bool Config::parse(std::string path) {
             matLibs.push_back(*it);
         }
     } catch(std::domain_error e) {
-        std::cerr << "[main.json] \"materials\": expected array of strings" << std::endl;
+        std::cerr << path << " \"materials\": expected array of strings" << std::endl;
         return false;
     }
 

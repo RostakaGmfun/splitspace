@@ -26,7 +26,7 @@ public:
     Config();
     ~Config();
 
-    bool parse(std::string path);
+    bool parse(const std::string &path);
     
     WindowConfig window;
     LoggingConfig log;

@@ -28,14 +28,14 @@ public:
     Entity(Engine *e, EntityManifest *manifest, Entity *parent = nullptr);
     virtual ~Entity() {}
     
-    glm::mat4 getWorld() const { return m_world; }
-    glm::vec3 getPos() const { return m_pos; }
-    glm::vec3 getRot() const { return m_rot; }
-    glm::vec3 getScale() const { return m_scale; }
+    const glm::mat4 &getWorld() const { return m_world; }
+    const glm::vec3 &getPos() const { return m_pos; }
+    const glm::vec3 &getRot() const { return m_rot; }
+    const glm::vec3 &getScale() const { return m_scale; }
 
-    void setPos(glm::vec3 pos) { m_pos = pos; }
-    void setRot(glm::vec3 rot) { m_rot = rot; }
-    void setScale(glm::vec3 scale) { m_scale = scale; }
+    void setPos(glm::vec3 &pos) { m_pos = pos; }
+    void setRot(glm::vec3 &rot) { m_rot = rot; }
+    void setScale(glm::vec3 &scale) { m_scale = scale; }
 
     bool setParent(Entity *e);
     bool addChild(Entity *e);

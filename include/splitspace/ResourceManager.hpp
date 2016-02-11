@@ -31,23 +31,23 @@ public:
     ResourceManager(Engine *e);
     ~ResourceManager();
 
-    bool loadMaterialLib(std::vector<std::string> ml);
-    bool loadMaterialLib(std::string name);
+    bool loadMaterialLib(const std::vector<std::string> &ml);
+    bool loadMaterialLib(const std::string &name);
 
-    bool createSceneManifests(std::vector<std::string> names);
-    bool createScene(std::string name);
+    bool createSceneManifests(const std::vector<std::string> &names);
+    bool createScene(const std::string &name);
 
     void destroy();
 
     bool addManifest(ResourceManifest *rm);
-    ResourceManifest *getManifest(std::string name);
-    Resource *loadResource(std::string name);
-    void unloadResource(std::string name);
+    ResourceManifest *getManifest(const std::string &name);
+    Resource *loadResource(const std::string &name);
+    void unloadResource(const std::string &name);
 
     int collectGarbage();
 
 private:
-    TextureManifest *readTextureManifest(std::string name);
+    TextureManifest *readTextureManifest(const std::string &name);
 
 private:
     Engine *m_engine;

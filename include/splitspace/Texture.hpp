@@ -10,7 +10,6 @@ class LogManager;
 struct TextureManifest: public ResourceManifest {
     TextureManifest(): ResourceManifest(RES_TEXTURE)
     {}
-    bool mipmappingEnabled;
 };
 
 class Texture: public Resource {
