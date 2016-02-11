@@ -1,6 +1,5 @@
 #include <splitspace/Engine.hpp>
 #include <splitspace/EventManger.hpp>
-#include <splitspace/SceneManager.hpp>
 #include <splitspace/ResourceManager.hpp>
 
 #include <iostream>

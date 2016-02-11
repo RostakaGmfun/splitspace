@@ -46,7 +46,7 @@ ResourceManager::~ResourceManager() {
     
 TextureManifest *ResourceManager::readTextureManifest(std::string name) {
 
-    TextureManifest *tm = getTextureManifest(name);
+    TextureManifest *tm = static_cast<TextureManifest *>(getManifest(name));
     if(!tm) {
         tm = new TextureManifest;
         if(!tm) {
