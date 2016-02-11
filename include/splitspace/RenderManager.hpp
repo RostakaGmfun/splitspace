@@ -20,6 +20,8 @@ class Scene;
 class Texture;
 class Shader;
 class Mesh;
+class Object;
+class Material;
 
 enum VertexFormat {
     VERTEX_3DT,
@@ -71,8 +73,6 @@ public:
     ~RenderManager();
 
     bool init(bool vsync);
-    bool loadScene(Scene *s);
-    void unloadScene();
     void render();
     void destroy();
 
@@ -92,6 +92,15 @@ public:
 private:
     void setupGL();
     bool createVAOAndVBO(GLuint &vao, GLuint &vbo);
+
+    void beginFrame();
+    void renderScene();
+    void endFrame();
+
+    void renderObject(Object *o);
+
+    void setupMaterial(Material *m);
+    void setupMesh(Mesh *m);
 
 private:
     WindowManager *m_winManager;

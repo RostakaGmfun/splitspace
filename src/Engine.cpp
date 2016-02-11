@@ -19,7 +19,10 @@ Engine::Engine():   logManager(nullptr),
                     renderManager(nullptr),
                     physManager(nullptr),
                     config(nullptr),
-                    m_quit(false)
+                    m_quit(false),
+                    m_avgFrameTime(0),
+                    m_totalFrames(0)
+
 {}
 
 Engine::~Engine() {
@@ -58,11 +61,16 @@ void Engine::mainLoop() {
         windowManager->collectEvents();
         eventManager->emitEvent(e);
         renderManager->render();
+        int t = cur.count()-last.count();
         last = cur;
+        m_totalFrames++;
+        m_avgFrameTime = m_avgFrameTime*(1-1.f/m_totalFrames)+(float)t/(m_totalFrames);
     }
-    
+
+    logStats();
     eventManager->logStats();
     renderManager->logStats();
+    resManager->logStats();
 }
 
 bool Engine::initLog() {
@@ -147,6 +155,11 @@ void Engine::destroyManagers() {
         delete logManager;
     if(eventManager)
         delete eventManager;
+}
+
+void Engine::logStats() {
+    logManager->logInfo("(Engine) STATS:");
+    logManager->logInfo("\t Average frame time: "+std::to_string(m_avgFrameTime));
 }
 
 } // namespace splitspace

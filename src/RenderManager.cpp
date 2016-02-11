@@ -178,9 +178,11 @@ bool RenderManager::createMesh(const Vertex3D *vData, int numVerts, GLuint &vboN
 
     glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3D), 
                  vData, GL_STATIC_DRAW);
+    m_memoryUsed+=numVerts*sizeof(Vertex3D);
     //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //glEnableVertexAttribArray(g_AttribPositionLocation);
 
+    m_totalMeshes++;
     return true;
 }
 
@@ -199,9 +201,11 @@ bool RenderManager::createMesh(const Vertex3DT *vData, int numVerts, GLuint &vbo
 
     glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DT), 
                  vData, GL_STATIC_DRAW);
+    m_memoryUsed+=numVerts*sizeof(Vertex3D);
     //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //glEnableVertexAttribArray(g_AttribPositionLocation);
 
+    m_totalMeshes++;
     return true;
 }
 
@@ -220,9 +224,11 @@ bool RenderManager::createMesh(const Vertex3DN *vData, int numVerts, GLuint &vbo
 
     glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DN), 
                  vData, GL_STATIC_DRAW);
+    m_memoryUsed+=numVerts*sizeof(Vertex3D);
     //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //glEnableVertexAttribArray(g_AttribPositionLocation);
 
+    m_totalMeshes++;
     return true;
 }
 
@@ -241,9 +247,11 @@ bool RenderManager::createMesh(const Vertex3DTN *vData, int numVerts, GLuint &vb
 
     glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DTN), 
                  vData, GL_STATIC_DRAW);
+    m_memoryUsed+=numVerts*sizeof(Vertex3D);
     //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
     //glEnableVertexAttribArray(g_AttribPositionLocation);
 
+    m_totalMeshes++;
     return true;
 }
     
@@ -275,13 +283,25 @@ void RenderManager::render() {
     using namespace std::chrono;
     milliseconds cur, last = duration_cast<milliseconds>(
                         system_clock::now().time_since_epoch());
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
-    SDL_GL_SwapWindow(m_winManager->getSDLWindow());
+    beginFrame();
+    renderScene();
+    endFrame();
     cur = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     int t = cur.count()-last.count();
     m_totalFrames++;
     m_averageFrameTime = m_averageFrameTime*(1-1.f/m_totalFrames)+(float)t/(m_totalFrames);
+}
+
+void RenderManager::beginFrame() {
+    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+}
+
+void RenderManager::renderScene() {
+
+}
+
+void RenderManager::endFrame() {
+    SDL_GL_SwapWindow(m_winManager->getSDLWindow());
 }
 
 void RenderManager::destroy() {
@@ -290,12 +310,12 @@ void RenderManager::destroy() {
 
 void RenderManager::logStats() {
     m_logManager->logInfo("(RenderManager) STATS:");
-    m_logManager->logInfo("(RenderManager) Total draw calls: "+std::to_string(m_totalDrawCalls));
-    m_logManager->logInfo("(RenderManager) Total GL textures: "+std::to_string(m_totalTextures));
-    m_logManager->logInfo("(RenderManager) Total shaders: "+std::to_string(m_totalShaders));
-    m_logManager->logInfo("(RenderManager) Total meshes: "+std::to_string(m_totalMeshes));
-    m_logManager->logInfo("(RenderManager) Average render time: "+std::to_string(m_averageFrameTime)+"(ms)");
-    m_logManager->logInfo("(RenderManager) Memory used: "+std::to_string((float)m_memoryUsed/(2<<20))+"MB");
+    m_logManager->logInfo("\t Total draw calls: "+std::to_string(m_totalDrawCalls));
+    m_logManager->logInfo("\t Total GL textures: "+std::to_string(m_totalTextures));
+    m_logManager->logInfo("\t Total shaders: "+std::to_string(m_totalShaders));
+    m_logManager->logInfo("\t Total meshes: "+std::to_string(m_totalMeshes));
+    m_logManager->logInfo("\t Average render time: "+std::to_string(m_averageFrameTime)+"(ms)");
+    m_logManager->logInfo("\t Memory used: "+std::to_string((float)m_memoryUsed/(2<<20))+"MB");
 }
 
 } // namespace splitspace

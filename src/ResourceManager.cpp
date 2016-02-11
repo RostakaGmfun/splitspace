@@ -37,7 +37,9 @@ static void readVec3(glm::vec3 &vec, json &array) {
 namespace splitspace {
 
 ResourceManager::ResourceManager(Engine *e): m_engine(e), 
-                                             m_logMan(e->logManager)
+                                             m_logMan(e->logManager),
+                                             m_totalResLoaded(0),
+                                             m_totalResFails(0)
 {}
     
 ResourceManager::~ResourceManager() {
@@ -304,6 +306,7 @@ ResourceManifest *ResourceManager::getManifest(const std::string &name) {
 Resource *ResourceManager::loadResource(const std::string &name) {
     if(name.empty()) {
         m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        m_totalResFails++;
         return nullptr;
     }
     
@@ -312,6 +315,7 @@ Resource *ResourceManager::loadResource(const std::string &name) {
         auto it = m_resourceManifests.find(name);
         if(it == m_resourceManifests.end()) {
             m_logMan->logErr("(ResourceManager) No Resource with name \""+name+"\" found");
+            m_totalResFails++;
             return nullptr;
         }
 
@@ -342,11 +346,13 @@ Resource *ResourceManager::loadResource(const std::string &name) {
             break; }
             default:
                 m_logMan->logErr("(ResourceManager) Unknown or unsupported Resource");
+                m_totalResFails++;
                 return nullptr;
         }
 
         if(!res) {
             m_logMan->logErr("(ResourceManager) Out of memory");
+            m_totalResFails++;
             return nullptr;
         }
         
@@ -354,10 +360,12 @@ Resource *ResourceManager::loadResource(const std::string &name) {
         if(!res->load()) {
             m_logMan->logErr("(ResourceManager) Error loading \""+name+"\"");
             delete res;
+            m_totalResFails++;
             return nullptr;
         }
 
         m_resourceCache[name] = res;
+        m_totalResLoaded++;
     }
 
     Resource *r = m_resourceCache[name];
@@ -367,6 +375,12 @@ Resource *ResourceManager::loadResource(const std::string &name) {
 
 void ResourceManager::destroy() {
 
+}
+
+void ResourceManager::logStats() {
+    m_logMan->logInfo("(ResourceManager) STATS:");
+    m_logMan->logInfo("\t Total resources created: "+std::to_string(m_totalResLoaded));
+    m_logMan->logInfo("\t Total failed resource loading: "+std::to_string(m_totalResFails));
 }
 
 } // namespace splitspace

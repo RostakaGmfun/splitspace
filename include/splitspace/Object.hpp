@@ -28,6 +28,9 @@ public:
     virtual bool load();
     virtual void unload();
 
+    const Mesh *getMesh() const { return m_mesh; }
+    const Material *getMaterial() const { return m_material; }
+
 private:
     Material *m_material;
     Mesh *m_mesh;

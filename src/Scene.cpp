@@ -5,6 +5,8 @@
 #include <splitspace/Object.hpp>
 #include <splitspace/ResourceManager.hpp>
 
+#include <algorithm>
+
 namespace splitspace {
 
 Scene::Scene(Engine *e, SceneManifest *manifest):
@@ -63,6 +65,17 @@ bool Scene::load() {
             }
         }
 
+        auto objListItr = m_renderMap.find(o->getMaterial());
+        if(objListItr == m_renderMap.end()) {
+            m_renderMap[o->getMaterial()].push_back(o);
+        } else {
+            auto &objL = m_renderMap[o->getMaterial()];
+            auto objItr = std::find(objL.begin(), objL.end(), o);
+            if(objItr == objL.end()) {
+                objL.push_back(o);
+            }
+        }
+        
     }
 
     return true;

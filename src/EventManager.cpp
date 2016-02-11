@@ -51,9 +51,9 @@ bool EventManager::emitEvent(Event *ev) {
 
 void EventManager::logStats() {
     m_logManager->logInfo("(EventManager) STATS:");
-    m_logManager->logInfo("(EventManager) Number of event listeners: "
+    m_logManager->logInfo("\t Number of event listeners: "
                           +std::to_string(m_listeners.size()));
-    m_logManager->logInfo("(Event Manager) Number of events dispatched: "
+    m_logManager->logInfo("\t Number of events dispatched: "
                           +std::to_string(m_numEventsDispatched));
 }
 

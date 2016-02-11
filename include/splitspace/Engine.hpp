@@ -27,6 +27,8 @@ public:
 
     void shutdown();
 
+    void logStats();
+
 private:
     bool initLog();
     bool initEvents();
@@ -49,8 +51,10 @@ public:
     Config *config;
 
 private:
-
     bool m_quit;
+    float m_avgFrameTime;
+    int m_totalFrames;
+
 
 };
 

@@ -46,6 +46,8 @@ public:
 
     int collectGarbage();
 
+    void logStats();
+
 private:
     TextureManifest *readTextureManifest(const std::string &name);
 
@@ -55,6 +57,9 @@ private:
 
     std::map<std::string, Resource *> m_resourceCache;
     std::map<std::string, ResourceManifest *> m_resourceManifests;
+
+    int m_totalResLoaded;
+    int m_totalResFails;
 };
 
 } // namespace splitspace
