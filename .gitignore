@@ -1,2 +1,5 @@
 build/
 json/json.hpp
+test/build/
+test/catch/catch.hpp
+

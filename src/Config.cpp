@@ -16,11 +16,18 @@ Config::~Config()
 
 bool Config::parse(const std::string &path) {
     std::ifstream f(path);
-    if(!f.is_open())
+    if(!f.is_open()) {
         return false;
-   
+    }
+    
     json jconfig;
-    f >> jconfig;
+    try {
+        f >> jconfig;
+    } catch(std::invalid_argument e) {
+        std::cerr << "[" << path << "]" << "Parse error:" << std::endl;
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
 
     try {
         auto jwindow = jconfig["window"];
@@ -62,43 +69,38 @@ bool Config::parse(const std::string &path) {
     }
 
     auto jscenes = jconfig["scenes"];
-    if(jscenes.is_null()) {
-        std::cerr << "[" << path << "]" << "  Error! no scenes found"  << std::endl;
-        return false;
-    }
-
-    if(!jscenes.is_array()) {
-        std::cerr << "[" << path << "]" << " \"scenes\" expected to be array of strings" << std::endl;
-        return false;
-    }
-
-    try {
-        for(auto it = jscenes.begin();it!=jscenes.end();it++) {
-            scenes.push_back(*it);
+    if(!jscenes.is_null()) {
+        if(!jscenes.is_array()) {
+            std::cerr << "[" << path << "]" << " \"scenes\" expected to be array of strings" << std::endl;
+            return false;
         }
-    } catch(std::domain_error e) {
-        std::cerr << "[" << path << "]" << " \"scenes\": expected array of strings" << std::endl;
-        return false;
+
+        try {
+            for(auto it = jscenes.begin();it!=jscenes.end();it++) {
+                scenes.push_back(*it);
+            }
+        } catch(std::domain_error e) {
+            std::cerr << "[" << path << "]" << " \"scenes\": expected array of strings" << std::endl;
+            return false;
+        }
     }
-    
+
     auto jmatlibs = jconfig["materials"];
-    if(jmatlibs.is_null()) {
-        std::cerr << "[" << path << "]" << "  Error! no material libraries found"  << std::endl;
-        return false;
-    }
+    if(!jmatlibs.is_null()) {
 
-    if(!jmatlibs.is_array()) {
-        std::cerr << "[" << path << "]" << " \"materials\" expected to be array of strings" << std::endl;
-        return false;
-    }
-
-    try {
-        for(auto it = jmatlibs.begin();it!=jmatlibs.end();it++) {
-            matLibs.push_back(*it);
+        if(!jmatlibs.is_array()) {
+            std::cerr << "[" << path << "]" << " \"materials\" expected to be array of strings" << std::endl;
+            return false;
         }
-    } catch(std::domain_error e) {
-        std::cerr << path << " \"materials\": expected array of strings" << std::endl;
-        return false;
+
+        try {
+            for(auto it = jmatlibs.begin();it!=jmatlibs.end();it++) {
+                matLibs.push_back(*it);
+            }
+        } catch(std::domain_error e) {
+            std::cerr << path << " \"materials\": expected array of strings" << std::endl;
+            return false;
+        }
     }
 
     return true;

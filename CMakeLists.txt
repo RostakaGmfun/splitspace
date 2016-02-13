@@ -15,7 +15,9 @@ find_library(GLEW_lib GLEW)
 set(bullet_lib BulletDynamics BulletCollision LinearMath)
 set(bullet_incdir /usr/include/bullet)
 
-message("LIBS: ${gl_lib} ${sdl2_lib} ${assimp_lib} ${bullet_lib} ${SOIL_lib}")
+set(LIBS ${GLEW_lib} ${gl_lib} ${sdl2_lib} ${assimp_lib} ${bullet_lib} ${SOIL_lib})
+
+message("LIBS: ${LIBS}")
 
 set(ENGINE_SRC 
     src/Engine.cpp
@@ -39,10 +41,12 @@ set(DEMO_SRC
     demo/main.cpp
     )
 
+add_subdirectory(test)
+
 include_directories(include ${bullet_incdir} ${CMAKE_SOURCE_DIR})
 
 add_library(${ENGINE} STATIC ${ENGINE_SRC})
 add_executable(${DEMO} ${DEMO_SRC})
 
-target_link_libraries(${DEMO} ${ENGINE} ${gl_lib} ${sdl2_lib} ${assimp_lib} ${bullet_lib} ${SOIL_lib} ${GLEW_lib})
+target_link_libraries(${DEMO} ${ENGINE} ${LIBS})
 
