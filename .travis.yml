@@ -2,6 +2,7 @@ language: cpp
 
 before_install:
     - sudo apt-get update -qq
+install:
     - sudo apt-get -y install mesa-common-dev libglew-dev libsdl2-dev \
       libassimp-dev libbullet-dev libsoil-dev
     - cd test/catch
