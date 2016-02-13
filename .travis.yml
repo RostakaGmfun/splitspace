@@ -8,7 +8,6 @@ addons:
             - libglew-dev
             - libsdl2-dev
             - libassimp-dev
-            - libbullet-dev
             - libsoil-dev
 
 before_install:
