@@ -11,7 +11,13 @@ addons:
             - libassimp-dev
             - libsoil-dev
 
+before_install:
+    - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
+    - sudo apt-get update -qq
+
 install:
+    - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
     - cd test/catch
     - wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
     - cd ../../json
