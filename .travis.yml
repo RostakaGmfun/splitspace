@@ -17,4 +17,5 @@ install:
     - wget https://github.com/nlohmann/json/releases/download/v1.1.0/json.hpp
 
 script:
+    cd ..
     ./deploy.sh
