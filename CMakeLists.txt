@@ -5,7 +5,7 @@ set(DEMO splitspace-demo)
 
 project(${ENGINE})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 
 find_library(gl_lib GL)
 find_library(sdl2_lib SDL2)

@@ -40,6 +40,8 @@ public:
     bool setParent(Entity *e);
     bool addChild(Entity *e);
     bool removeChild(Entity *e);
+    std::vector<Entity *> getChildren() const { return m_children; }
+    Entity *getParent() const { return m_parent; } 
 
     virtual void update(float dt);
 

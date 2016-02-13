@@ -4,9 +4,12 @@ set(PNAME splitspace-test)
 
 project(${PNAME})
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+
 set(TEST_SRC 
     main.cpp
     splitspace/ConfigTest.cpp
+    splitspace/EntityTest.cpp
     )
 
 add_executable( ${PNAME} ${TEST_SRC} )

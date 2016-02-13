@@ -1,5 +1,5 @@
 #! /bin/sh
 
 mkdir -p build && cd build && cmake .. && make -j4 && cd ..
-./build/test/TEST
+./build/test/splitspace-test
 

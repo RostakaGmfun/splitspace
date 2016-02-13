@@ -8,18 +8,14 @@ namespace splitspace {
 Entity::Entity(Engine *e, EntityManifest *manifest,Entity *parent):
                                                   Resource(e, manifest),
                                                   m_parent(parent)
-{}
+{
+    if(m_parent) {
+        m_parent->addChild(this);
+    }
+}
 
 bool Entity::setParent(Entity *p) {
-    if(!p) {
-        return false;
-    }
-     
-    if(!p->addChild(this)) {
-        return false;
-    }
-    
-    if(m_parent) {
+    if(m_parent && m_parent!=p) {
         m_parent->removeChild(this);
     }
 
@@ -33,11 +29,19 @@ bool Entity::addChild(Entity *e) {
         return false;
     }
 
+    if(e->getParent() && e->getParent()!=this) {
+        e->getParent()->removeChild(e);
+    }
+
     auto it = std::find(m_children.begin(), m_children.end(), e);
 
     if(it==m_children.end()) {
         m_children.push_back(e);
+    } else {
+        return false;
     }
+
+    e->setParent(this);
 
     return true;
 }
@@ -54,6 +58,7 @@ bool Entity::removeChild(Entity *e) {
     }
 
     m_children.erase(it);
+    e->setParent(nullptr);
     return true;
 }
 
