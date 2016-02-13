@@ -1,10 +1,19 @@
 language: cpp
 
+addons:
+    apt:
+        packages:
+            - cmake
+            - mesa-common-dev
+            - libglew-dev
+            - libsdl2-dev
+            - libassimp-dev
+            - libbullet-dev
+            - libsoil-dev
+
 before_install:
     - sudo apt-get update -qq
 install:
-    - sudo apt-get -y install mesa-common-dev libglew-dev libsdl2-dev \
-      libassimp-dev libbullet-dev libsoil-dev
     - cd test/catch
     - wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
     - cd ../../json
