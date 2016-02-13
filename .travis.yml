@@ -1,0 +1,13 @@
+language: cpp
+
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get -y install mesa-common-dev libglew-dev libsdl2-dev \
+      libassimp-dev libbullet-dev libsoil-dev
+    - cd test/catch
+    - wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
+    - cd ../../json
+    - wget https://github.com/nlohmann/json/releases/download/v1.1.0/json.hpp
+
+script:
+    ./deploy.sh
