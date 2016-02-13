@@ -10,8 +10,6 @@ addons:
             - libassimp-dev
             - libsoil-dev
 
-before_install:
-    - sudo apt-get update -qq
 install:
     - cd test/catch
     - wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
