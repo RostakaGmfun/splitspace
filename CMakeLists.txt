@@ -13,7 +13,7 @@ find_library(assimp_lib assimp)
 find_library(SOIL_lib SOIL)
 find_library(GLEW_lib GLEW)
 
-set(LIBS ${GLEW_lib} ${gl_lib} ${sdl2_lib} ${assimp_lib} ${SOIL_lib})
+set(LIBS GL GLEW SDL2 assimp SOIL )
 
 message("LIBS: ${LIBS}")
 
