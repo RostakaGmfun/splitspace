@@ -1,4 +1,4 @@
-#include <splitspace/EventManger.hpp>
+#include <splitspace/EventManager.hpp>
 #include <splitspace/LogManager.hpp>
 
 #include <algorithm>
@@ -11,14 +11,33 @@ EventManager::EventManager(LogManager *lm): m_logManager(lm), m_numEventsDispatc
 }
 
 bool EventManager::addListener(EventListener *l) {
-    if(!l)
+    if(!l) {
         return false;
-    if(std::find(m_listeners.begin(), m_listeners.end(), l)!=m_listeners.end())
+    }
+
+    if(std::find(m_listeners.begin(), m_listeners.end(), l)!=m_listeners.end()) {
         return false;
+    }
+
     m_listeners.push_back(l);
     m_logManager->logInfo("(EventManager) Registered event listener "+
                           l->getName()+" with mask "+getMaskName(l->getMask()));
 
+    return true;
+}
+
+bool EventManager::removeListener(EventListener *l) {
+    if(!l) {
+        return false;
+    }
+
+    auto it = std::find(m_listeners.begin(), m_listeners.end(), l);
+
+    if(it == m_listeners.end()) {
+        return false;
+    }
+
+    m_listeners.erase(it);
     return true;
 }
 

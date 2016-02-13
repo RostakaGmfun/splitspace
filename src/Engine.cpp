@@ -1,6 +1,6 @@
 #include <splitspace/Engine.hpp>
 #include <splitspace/LogManager.hpp>
-#include <splitspace/EventManger.hpp>
+#include <splitspace/EventManager.hpp>
 #include <splitspace/WindowManager.hpp>
 #include <splitspace/RenderManager.hpp>
 #include <splitspace/ResourceManager.hpp>

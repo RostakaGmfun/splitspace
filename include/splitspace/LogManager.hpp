@@ -14,7 +14,7 @@ enum LogLevel {
 
 class LogManager {
 public:
-    LogManager(const std::string &sinkFname);
+    LogManager(const std::string &sinkFname = "");
     ~LogManager();
 
     void logErr(const std::string &str);

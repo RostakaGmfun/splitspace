@@ -10,6 +10,7 @@ set(TEST_SRC
     main.cpp
     splitspace/ConfigTest.cpp
     splitspace/EntityTest.cpp
+    splitspace/EventManagerTest.cpp
     )
 
 add_executable( ${PNAME} ${TEST_SRC} )

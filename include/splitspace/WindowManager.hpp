@@ -1,7 +1,7 @@
 #ifndef WINDOW_MANAGER_H
 #define WINDOW_MANAGER_H
 
-#include <splitspace/EventManger.hpp>
+#include <splitspace/EventManager.hpp>
 
 #include <SDL2/SDL.h>
 #include <vector>

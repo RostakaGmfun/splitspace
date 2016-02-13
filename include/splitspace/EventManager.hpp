@@ -98,7 +98,10 @@ public:
     ~EventManager() {}
 
     bool addListener(EventListener *l);
+    bool removeListener(EventListener *l);
     bool emitEvent(Event *ev);
+
+    std::vector<EventListener *> getListeners() const { return m_listeners; }
 
     void logStats();
 
