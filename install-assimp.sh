@@ -6,7 +6,7 @@ cd assimp*/
 mkdir build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=../../ -DASSIMP_BUILD_TESTS=false ..
-make install -j4
+make install -j4 > /dev/null
 cd ../../
 rm -rf assimp*/
 rm v3.2.tar.gz
