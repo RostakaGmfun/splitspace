@@ -23,9 +23,10 @@ install:
     - wget https://raw.githubusercontent.com/philsquared/Catch/master/single_include/catch.hpp
     - cd ../../json
     - wget https://github.com/nlohmann/json/releases/download/v1.1.0/json.hpp
+    - cd ..
+    - ./installSOIL.sh
 
 script:
-    - cd ..
     - ./deploy.sh
 
 notifications:
