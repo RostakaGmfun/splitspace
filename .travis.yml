@@ -7,8 +7,6 @@ addons:
             - cmake
             - mesa-common-dev
             - libglew-dev
-            - libassimp-dev
-            - libsoil-dev
 
 before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -26,6 +24,7 @@ install:
     - cd ..
     - ./installSOIL.sh
     - ./installGLM.sh
+    - ./install-assimp.sh
 
 script:
     - ./deploy.sh

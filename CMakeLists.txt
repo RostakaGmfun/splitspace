@@ -13,7 +13,7 @@ find_library(assimp_lib assimp)
 find_library(SOIL_lib SOIL)
 find_library(GLEW_lib GLEW)
 
-set(LIBS GL GLEW SDL2 assimp ${CMAKE_SOURCE_DIR}/lib/libSOIL.a )
+set(LIBS GL GLEW SDL2 assimp SOIL)
 
 message("LIBS: ${LIBS}")
 

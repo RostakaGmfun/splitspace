@@ -2,4 +2,9 @@ build/
 json/json.hpp
 test/build/
 test/catch/catch.hpp
+include/assimp/
+include/glm/
+include/SOIL/
+lib/
+bin/
 
