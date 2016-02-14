@@ -10,6 +10,7 @@ addons:
             - libsdl2-dev
             - libassimp-dev
             - libsoil-dev
+            - libglm-dev
 
 before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
