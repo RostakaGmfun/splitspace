@@ -16,5 +16,5 @@ set(TEST_SRC
 add_executable( ${PNAME} ${TEST_SRC} )
 target_link_libraries (${PNAME} ${CMAKE_SOURCE_DIR}/build/libsplitspace.a ${LIBS})
 
-include_directories(../include/ ./)
+include_directories(${CMAKE_SOURCE_DIR}/include/ )
 

@@ -5,6 +5,8 @@ test/catch/catch.hpp
 include/assimp/
 include/glm/
 include/SOIL/
+include/json
+include/catch
 lib/
 bin/
 
