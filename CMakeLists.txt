@@ -39,8 +39,6 @@ set(DEMO_SRC
     demo/main.cpp
     )
 
-add_subdirectory(test)
-
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(include ${CMAKE_SOURCE_DIR})
 
@@ -48,4 +46,5 @@ add_library(${ENGINE} STATIC ${ENGINE_SRC})
 add_executable(${DEMO} ${DEMO_SRC})
 
 target_link_libraries(${DEMO} ${ENGINE} ${LIBS})
+add_subdirectory(test)
 

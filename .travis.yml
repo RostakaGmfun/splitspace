@@ -9,7 +9,6 @@ addons:
             - libglew-dev
             - libassimp-dev
             - libsoil-dev
-            - libglm-dev
 
 before_install:
     - sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y
@@ -26,6 +25,7 @@ install:
     - wget https://github.com/nlohmann/json/releases/download/v1.1.0/json.hpp
     - cd ..
     - ./installSOIL.sh
+    - ./installGLM.sh
 
 script:
     - ./deploy.sh
