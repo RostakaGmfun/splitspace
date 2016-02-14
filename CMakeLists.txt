@@ -13,7 +13,7 @@ find_library(assimp_lib assimp)
 find_library(SOIL_lib SOIL)
 find_library(GLEW_lib GLEW)
 
-set(LIBS GL GLEW SDL2 assimp SOIL )
+set(LIBS GL GLEW SDL2 assimp ${CMAKE_SOURCE_DIR}/lib/libSOIL.a )
 
 message("LIBS: ${LIBS}")
 
@@ -41,6 +41,7 @@ set(DEMO_SRC
 
 add_subdirectory(test)
 
+link_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(include ${CMAKE_SOURCE_DIR})
 
 add_library(${ENGINE} STATIC ${ENGINE_SRC})
