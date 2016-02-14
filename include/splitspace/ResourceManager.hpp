@@ -11,24 +11,13 @@ class Engine;
 class LogManager;
 
 class Resource;
-class Texture;
-class Shader;
-class Mesh;
-class Material;
-class Object;
-class Scene;
 
 struct ResourceManifest;
 struct TextureManifest;
-struct ObjectManifest;
-struct MeshManifest;
-struct MaterialManifest;
-struct ShaderManifest;
-struct SceneManifest;
 
 class ResourceManager {
 public:
-    ResourceManager(Engine *e);
+    ResourceManager(Engine *e, const std::string &resPath = "data/");
     ~ResourceManager();
 
     bool loadMaterialLib(const std::vector<std::string> &ml);
@@ -42,7 +31,7 @@ public:
     bool addManifest(ResourceManifest *rm);
     ResourceManifest *getManifest(const std::string &name);
     Resource *loadResource(const std::string &name);
-    void unloadResource(const std::string &name);
+    bool unloadResource(const std::string &name);
 
     int collectGarbage();
 
@@ -60,6 +49,8 @@ private:
 
     int m_totalResLoaded;
     int m_totalResFails;
+
+    std::string m_resPath;
 };
 
 } // namespace splitspace

@@ -48,7 +48,6 @@ void Material::unload() {
         m_diffuseMap->unload();
     if(m_normalMap)
         m_normalMap->unload();
-    decRefCount();
 }
 
 } // namepsace splitspace

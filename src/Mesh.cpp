@@ -56,7 +56,6 @@ bool Mesh::load() {
 }
 
 void Mesh::unload() {
-    decRefCount();
 }
 
 bool Mesh::createPlane() {

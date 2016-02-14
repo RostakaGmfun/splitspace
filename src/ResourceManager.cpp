@@ -36,10 +36,11 @@ static void readVec3(glm::vec3 &vec, json &array) {
 
 namespace splitspace {
 
-ResourceManager::ResourceManager(Engine *e): m_engine(e), 
+ResourceManager::ResourceManager(Engine *e, const std::string &resPath): m_engine(e), 
                                              m_logMan(e->logManager),
                                              m_totalResLoaded(0),
-                                             m_totalResFails(0)
+                                             m_totalResFails(0),
+                                             m_resPath(resPath)
 {}
     
 ResourceManager::~ResourceManager() {
@@ -63,17 +64,25 @@ TextureManifest *ResourceManager::readTextureManifest(const std::string &name) {
     
 bool ResourceManager::loadMaterialLib(const std::vector<std::string> &ml) {
     for(auto it = ml.begin();it!=ml.end();it++) {
-        loadMaterialLib(*it);
+        if(!loadMaterialLib(*it)) {
+            return false;
+        }
     }
 
     return true;
 }
 
 bool ResourceManager::loadMaterialLib(const std::string &name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return false;
+    }
+
     MaterialManifest *mm = nullptr;
-    std::ifstream f("data/materials/"+name+".json");
+    std::string path = m_resPath+"materials/"+name+".json";
+    std::ifstream f(path);
     if(!f.is_open()) {
-        m_logMan->logErr("(ResourceManager) Error opening data/materials/"+name+".json");
+        m_logMan->logErr("(ResourceManager) Error opening "+path);
         return false;
     }
     json jmatlib;
@@ -81,7 +90,7 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
         jmatlib << f;
         jmatlib = jmatlib["materials"];
     } catch(std::domain_error e) {
-        m_logMan->logErr("(ResourceManager) Error parsing data/materials/"+name+".json");
+        m_logMan->logErr("(ResourceManager) Error parsing "+path);
         m_logMan->logErr("(ResourceManager)\t"+std::string(e.what()));
         return false;
     }
@@ -94,7 +103,7 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
         
         try {
             if((*it)["name"].is_null()) {
-                m_logMan->logErr("(ResourceManager) data/materials/"+name+".json:");
+                m_logMan->logErr("(ResourceManager) "+path+":");
                 m_logMan->logErr("(ResourceManager) Empty material names not supported");
                 delete mm;
                 continue;
@@ -144,12 +153,12 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
                     }
                 }
             } else {
-                m_logMan->logWarn("(ResourceManager) data/materials/"+name+".json:");
+                m_logMan->logWarn("(ResourceManager) "+path+":");
                 m_logMan->logWarn("(ResourceManager) \"mapping\" is expected to be object");
                 delete mm;
             }
         } catch(std::domain_error e) {
-            m_logMan->logErr("(ResourceManager): data/materials/"+name+".json:");
+            m_logMan->logErr("(ResourceManager): "+path+":");
             m_logMan->logErr("(ResourceManager): "+std::string(e.what()));
             delete mm;
             return false;
@@ -176,10 +185,10 @@ bool ResourceManager::createScene(const std::string &name) {
         m_logMan->logErr("(ResourceManager) Empty scene names not supported");
         return false;
     }
-    
-    std::ifstream f("data/scenes/"+name+".json");
+    std::string path = m_resPath+"/scenes/"+name+".json";
+    std::ifstream f(path);
     if(!f.is_open()) {
-        m_logMan->logErr("(ResourceManager) Error opening data/scenes/"+name+".json");
+        m_logMan->logErr("(ResourceManager) Error opening "+path);
         return false;
     }
     
@@ -195,7 +204,7 @@ bool ResourceManager::createScene(const std::string &name) {
     try {
         jscene << f;
     } catch(std::domain_error e) {
-        m_logMan->logErr("(ResourceManager) data/scenes/"+name+".json");
+        m_logMan->logErr("(ResourceManager) "+path+":");
         m_logMan->logErr("\tParse error: "+std::string(e.what()));
         return false;
     }
@@ -344,6 +353,10 @@ Resource *ResourceManager::loadResource(const std::string &name) {
                 SceneManifest *m = static_cast<SceneManifest *>(it->second);
                 res = new Scene(m_engine, m);
             break; }
+            case RES_ENTITY: {
+                EntityManifest *m = static_cast<EntityManifest *>(it->second);
+                res = new Entity(m_engine, m);
+            break; }
             default:
                 m_logMan->logErr("(ResourceManager) Unknown or unsupported Resource");
                 m_totalResFails++;
@@ -375,6 +388,44 @@ Resource *ResourceManager::loadResource(const std::string &name) {
 
 void ResourceManager::destroy() {
 
+}
+
+bool ResourceManager::unloadResource(const std::string &name) {
+    if(name.empty()) {
+        m_logMan->logErr("(ResourceManager) Empty resource names not supported");
+        return false;
+    }
+    auto it = m_resourceCache.find(name);
+
+    if(it == m_resourceCache.end()) {
+        auto itman = m_resourceManifests.find(name);
+        if(itman == m_resourceManifests.end()) {
+            m_logMan->logErr("(ResourceManager) Resource "
+                            +name+" does not exits. Cannot unload it");
+            return false;
+        } else {
+            m_logMan->logWarn("ResourceManager) Resource "
+                              +name+" is not loaded so it can't be unloaded");
+            return false;
+        }
+    }
+    
+    it->second->unload();
+    it->second->decRefCount();
+    return true;
+}
+
+int ResourceManager::collectGarbage() {
+    int numGarbageCoollected = 0;
+
+    for( auto res : m_resourceCache ) {
+        if(res.second->getRefCount() == 0) {
+            res.second->unload();
+            numGarbageCoollected++;
+        }
+    }
+
+    return numGarbageCoollected;
 }
 
 void ResourceManager::logStats() {
