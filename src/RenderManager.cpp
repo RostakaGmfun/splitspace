@@ -2,6 +2,8 @@
 #include <splitspace/Engine.hpp>
 #include <splitspace/WindowManager.hpp>
 #include <splitspace/LogManager.hpp>
+#include <splitspace/Scene.hpp>
+#include <splitspace/Object.hpp>
 
 #include <chrono>
 
@@ -297,6 +299,26 @@ void RenderManager::beginFrame() {
 }
 
 void RenderManager::renderScene() {
+    if(!m_scene)
+        return;
+    
+    auto &renderMap = m_scene->getRenderMap();
+    for(auto it : renderMap) {
+        if(it.first) {
+            setupMaterial(it.first);
+        }
+
+        for(auto o : it.second) {
+            setupMesh(o->getMesh());
+        }
+    }
+}
+
+void RenderManager::setupMaterial(const Material *m) {
+
+}
+
+void RenderManager::setupMesh(const Mesh *m) {
 
 }
 

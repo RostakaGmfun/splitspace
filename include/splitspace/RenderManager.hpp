@@ -76,6 +76,8 @@ public:
     void render();
     void destroy();
 
+    void setScene(Scene *scn) { m_scene = scn; }
+
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createShader(const char *vs, const char *fs, const std::vector<ImageFormat> &outFormat, GLuint &glName);
@@ -97,10 +99,10 @@ private:
     void renderScene();
     void endFrame();
 
-    void renderObject(Object *o);
+    void renderObject(const Object *o);
 
-    void setupMaterial(Material *m);
-    void setupMesh(Mesh *m);
+    void setupMaterial(const Material *m);
+    void setupMesh(const Mesh *m);
 
 private:
     WindowManager *m_winManager;
@@ -117,6 +119,8 @@ private:
     int m_totalFrames;
     float m_averageFrameTime;
     int m_memoryUsed;
+
+    Scene *m_scene;
 
 };
 

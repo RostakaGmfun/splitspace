@@ -1,6 +1,8 @@
 #include <splitspace/Engine.hpp>
-#include <splitspace/EventManger.hpp>
+#include <splitspace/EventManager.hpp>
 #include <splitspace/ResourceManager.hpp>
+#include <splitspace/RenderManager.hpp>
+#include <splitspace/Scene.hpp>
 
 #include <iostream>
 
@@ -26,8 +28,11 @@ public:
 int main() {
     if(!engine.init())
         return 1;
-    if(!engine.resManager->loadResource("demoScene"))
+    Scene *scene = static_cast<Scene *>(engine.resManager->loadResource("demoScene"));
+    if(!scene)
         return 1;
+    
+    engine.renderManager->setScene(scene);
 
     engine.eventManager->addListener(new MyListener()); 
     engine.mainLoop();
