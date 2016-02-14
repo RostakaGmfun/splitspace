@@ -26,3 +26,8 @@ install:
 script:
     - cd ..
     - ./deploy.sh
+
+notifications:
+    email:
+        on_sucess: change
+        on_failure: change
