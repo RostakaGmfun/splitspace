@@ -47,10 +47,6 @@ enum TextureUsage {
     TEX_RENDERTARGET
 };
 
-struct Vertex3D {
-    glm::vec3 pos;
-};
-
 struct Vertex3DT {
     glm::vec3 pos;
     glm::vec2 texcoord;
@@ -67,6 +63,13 @@ struct Vertex3DTN {
     glm::vec3 normal;
 };
 
+struct MeshData;
+struct TextureData;
+struct ShaderData;
+struct MaterialData;
+struct ObjectData;
+struct LightData;
+
 class RenderManager {
 public:
     RenderManager(Engine *e);
@@ -78,14 +81,15 @@ public:
 
     void setScene(Scene *scn) { m_scene = scn; }
 
+    bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createShader(const char *vs, const char *fs, const std::vector<ImageFormat> &outFormat, GLuint &glName);
 
-    bool createMesh(const Vertex3D *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
-    bool createMesh(const Vertex3DT *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
-    bool createMesh(const Vertex3DN *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
-    bool createMesh(const Vertex3DTN *vData, int numVerts, GLuint &vboName, GLuint &vaoName);
+    void destroyMesh(GLuint &vao, GLuint &vbo);
+    void destroyTexture(GLuint &texId);
+    void destroySampler(GLuint &sampler);
+    void destroyShader(GLuint &progId);
 
     void logStats();
     int getFrameDrawCalls() const { return m_frameDrawCalls; }
@@ -94,15 +98,17 @@ public:
 private:
     void setupGL();
     bool createVAOAndVBO(GLuint &vao, GLuint &vbo);
+    void destroyVAOAndVBO(GLuint &vao, GLuint &vbo);
+
+    std::size_t getTextureSize(const GLuint texId);
 
     void beginFrame();
     void renderScene();
     void endFrame();
 
-    void renderObject(const Object *o);
-
     void setupMaterial(const Material *m);
     void setupMesh(const Mesh *m);
+    void drawCall();
 
 private:
     WindowManager *m_winManager;

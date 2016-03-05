@@ -70,7 +70,7 @@ bool Mesh::createPlane() {
         { vec3(0.5,0,0.5), vec2(1,0), vec3(0,1,0) }
     };
 
-    return m_renderMan->createMesh(verts, 6, m_vbo, m_vao);
+    return m_renderMan->createMesh(verts, VERTEX_3DTN, 6, m_vbo, m_vao);
 }
 
 bool Mesh::createCube() {

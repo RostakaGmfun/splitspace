@@ -84,33 +84,29 @@ bool RenderManager::init(bool vsync) {
 }
     
 bool RenderManager::createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName) {
-    GLuint n = 0;
-    glGenTextures(1, &n);
-    if(!n) {
+    glName = 0;
+    glGenTextures(1, &glName);
+    if(!glName) {
         m_logManager->logErr("(RenderManager) Error creating GL texture");
         return false;
     }
 
-    glBindTexture(GL_TEXTURE_2D, n);
+    glBindTexture(GL_TEXTURE_2D, glName);
 
-    int psz = 0;
     GLint glformat;
     switch(format) {
         case IMAGE_R:
-            psz = 1;
             glformat = GL_ALPHA;
         break;
         case IMAGE_RGB:
-            psz = 3;
             glformat = GL_RGB;
         break;
-        case IMAGE_RGBA:
-            psz = 4;
             glformat = GL_RGBA;
         break;
         default:
             m_logManager->logErr("(RenderManager) Unknown image format specified");
-            glDeleteTextures(1, &n);
+            destroyTexture(glName);
+            glBindTexture(GL_TEXTURE_2D, 0);
             return false;
     }
     
@@ -118,21 +114,60 @@ bool RenderManager::createTexture(const void *data, ImageFormat format, int w, i
     
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    int memSize = w*h*psz;
-    
-    
-    m_memoryUsed+=memSize;
-    m_totalTextures++;
+    glBindTexture(GL_TEXTURE_2D, 0);
 
+    m_memoryUsed+=getTextureSize(glName);
+    m_totalTextures++;
     return true;
 }
 
-bool RenderManager::createSampler(bool useMipmaps, TextureFiltering filtering, 
-                                                            GLuint &smaplerName) {
+std::size_t RenderManager::getTextureSize(const GLuint texId) {
+    if(!glIsTexture(texId)) {
+        return 0;
+    }
+  
+    glBindTexture(GL_TEXTURE_2D, texId);
 
-    GLuint sampler = 0;
-    glGenSamplers(1, &sampler); 
-    if(!sampler) {
+    GLint tw = 0, th = 0, tf = 0;
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &tw);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &th);
+    glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_INTERNAL_FORMAT, &tf);
+    
+    int depth = 0;
+
+    switch(tf) {
+        case GL_ALPHA:
+            depth = 1;
+        break;
+        case GL_RGB:
+            depth = 3;
+        break;
+        case GL_RGBA:
+            depth = 4;
+        break;
+    }
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    return tw*th*depth;
+
+}
+    
+void RenderManager::destroyTexture(GLuint &texId) {
+    if(glIsTexture(texId)) {
+        glDeleteTextures(1, &texId);
+        texId = 0;
+    } else {
+        m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Texture type");
+    }
+}
+
+bool RenderManager::createSampler(bool useMipmaps, TextureFiltering filtering, 
+                                                            GLuint &samplerName) {
+
+    samplerName = 0;
+    glGenSamplers(1, &samplerName); 
+    if(!samplerName) {
         m_logManager->logErr("(RenderManager) Error creating GL sampler object");
         return false;
     }
@@ -156,107 +191,78 @@ bool RenderManager::createSampler(bool useMipmaps, TextureFiltering filtering,
         }
     }
 
-    glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, magFilter);
-    glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, minFilter);
+    glSamplerParameteri(samplerName, GL_TEXTURE_MAG_FILTER, magFilter);
+    glSamplerParameteri(samplerName, GL_TEXTURE_MIN_FILTER, minFilter);
 
-    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glSamplerParameteri(samplerName, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glSamplerParameteri(samplerName, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     return true;
 }
 
-bool RenderManager::createMesh(const Vertex3D *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
+void RenderManager::destroySampler(GLuint &sampler) {
+    if(glIsTexture(sampler)) {
+        glDeleteTextures(1, &sampler);
+        sampler = 0;
+    } else {
+        m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Sampler type");
+    }
+}
+
+bool RenderManager::createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName) {
     if(!vData || numVerts<=0) {
         return false;
     }
 
-    GLuint vbo = 0, vao = 0;
-    if(!createVAOAndVBO(vao, vbo)) {
+    if(!createVAOAndVBO(vaoName, vboName)) {
+        destroyVAOAndVBO(vaoName, vboName);
         return false;
     }
 
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBindVertexArray(vaoName);
+    glBindBuffer(GL_ARRAY_BUFFER, vboName);
+    GLint bsize = 0;
+    switch(format) {
+        case VERTEX_3DT:
+            glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DT),
+                         vData, GL_STATIC_DRAW);
+        break;
+        case VERTEX_3DN:
+            glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DN),
+                         vData, GL_STATIC_DRAW);
+        break;
+        case VERTEX_3DTN:
+            glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DTN),
+                         vData, GL_STATIC_DRAW);
+        break;
+        default:
+            m_logManager->logErr("(RenderManager) Wrong vertex format specified");
+            destroyVAOAndVBO(vaoName, vboName);
+            return false;
+        break;
 
-    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3D), 
-                 vData, GL_STATIC_DRAW);
-    m_memoryUsed+=numVerts*sizeof(Vertex3D);
-    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    //glEnableVertexAttribArray(g_AttribPositionLocation);
+    }
 
+    glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bsize);
+    m_memoryUsed+=bsize;
     m_totalMeshes++;
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     return true;
 }
 
-bool RenderManager::createMesh(const Vertex3DT *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
-    if(!vData || numVerts<=0) {
-        return false;
+void RenderManager::destroyMesh(GLuint &vao, GLuint &vbo) {
+    if(!glIsBuffer(vbo)) {
+        return;
     }
-
-    GLuint vbo = 0, vao = 0;
-    if(!createVAOAndVBO(vao, vbo)) {
-        return false;
-    }
-
-    glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DT), 
-                 vData, GL_STATIC_DRAW);
-    m_memoryUsed+=numVerts*sizeof(Vertex3D);
-    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    //glEnableVertexAttribArray(g_AttribPositionLocation);
-
-    m_totalMeshes++;
-    return true;
+    GLint bsize = 0;
+    glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bsize);
+    m_memoryUsed-=bsize;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    destroyVAOAndVBO(vao, vbo);
 }
 
-bool RenderManager::createMesh(const Vertex3DN *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
-    if(!vData || numVerts<=0) {
-        return false;
-    }
-
-    GLuint vbo = 0, vao = 0;
-    if(!createVAOAndVBO(vao, vbo)) {
-        return false;
-    }
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DN), 
-                 vData, GL_STATIC_DRAW);
-    m_memoryUsed+=numVerts*sizeof(Vertex3D);
-    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    //glEnableVertexAttribArray(g_AttribPositionLocation);
-
-    m_totalMeshes++;
-    return true;
-}
-
-bool RenderManager::createMesh(const Vertex3DTN *vData, int numVerts, GLuint &vboName, GLuint &vaoName) {
-    if(!vData || numVerts<=0) {
-        return false;
-    }
-
-    GLuint vbo = 0, vao = 0;
-    if(!createVAOAndVBO(vao, vbo)) {
-        return false;
-    }
-
-    glBindVertexArray(vao);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-    glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DTN), 
-                 vData, GL_STATIC_DRAW);
-    m_memoryUsed+=numVerts*sizeof(Vertex3D);
-    //glVertexAttribPointer(g_AttribPositionLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    //glEnableVertexAttribArray(g_AttribPositionLocation);
-
-    m_totalMeshes++;
-    return true;
-}
-    
 bool RenderManager::createVAOAndVBO(GLuint &vao, GLuint &vbo) {
     glGenBuffers(1, &vbo);
     if(!vbo) {
@@ -271,6 +277,22 @@ bool RenderManager::createVAOAndVBO(GLuint &vao, GLuint &vbo) {
     }
 
     return true;
+}
+
+void RenderManager::destroyVAOAndVBO(GLuint &vao, GLuint &vbo) {
+    if(glIsBuffer(vbo)) {
+        glDeleteBuffers(1, &vbo);
+        vbo = 0;
+    } else {
+        m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Buffer type");
+    }
+
+    if(glIsVertexArray(vbo)) {
+        glDeleteVertexArrays(1, &vao);
+        vao = 0;
+    } else {
+        m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Vertex Array type");
+    }
 }
 
 void RenderManager::setupGL() {
@@ -310,6 +332,7 @@ void RenderManager::renderScene() {
 
         for(auto o : it.second) {
             setupMesh(o->getMesh());
+            drawCall();
         }
     }
 }
@@ -319,6 +342,10 @@ void RenderManager::setupMaterial(const Material *m) {
 }
 
 void RenderManager::setupMesh(const Mesh *m) {
+
+}
+
+void RenderManager::drawCall() {
 
 }
 
