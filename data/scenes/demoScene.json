@@ -7,7 +7,7 @@
             "transform": {
                 "position": [0,0,0],
                 "rotation": [0,0,0],
-                "scaling":  [10]
+                "scaling":  [10, 10, 10]
             }
         },
 
@@ -18,7 +18,7 @@
             "transform": {
                 "position": [0,0.5,0],
                 "rotation": [0,45,0],
-                "scaling":  [1]
+                "scaling":  [1, 1, 1]
             }
         },
 
@@ -28,7 +28,7 @@
             "transform": {
                 "position": [-5,1,0],
                 "rotation": [0,0,0],
-                "scaling":  [1]
+                "scaling":  [1, 1, 1]
             }
         },
 
@@ -39,7 +39,7 @@
             "transform": {
                 "position": [5,1,0],
                 "rotation": [0,0,0],
-                "scaling":  [1]
+                "scaling":  [1, 1, 1]
             }
         }
     ],

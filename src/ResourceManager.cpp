@@ -15,22 +15,20 @@
 
 using json = nlohmann::json;
 
-static void readVec2(glm::vec2 &vec, json &array) {
-    if(array.size() == 1) {
-        vec = glm::vec2(float(array[0]));
-    } else {
+static bool readVec2(glm::vec2 &vec, json &array) {
+    if(array.size() == 2) {
         vec = glm::vec2(float(array[0]), float(array[1]));
+        return true;
     }
+    return false;
 }
 
-static void readVec3(glm::vec3 &vec, json &array) {
-    if(array.size() == 1) {
-        vec = glm::vec3(float(array[0]));
-    } else if(array.size()<3) {
-        vec = glm::vec3(0); 
-    } else {
+static bool readVec3(glm::vec3 &vec, json &array) {
+    if(array.size() == 3) {
         vec = glm::vec3(float(array[0]), float(array[1]), float(array[2])); 
+        return true;
     }
+    return false;
 }
 
 
@@ -109,9 +107,18 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
                 continue;
             }
             mm->name = (*it)["name"];
-            readVec3(mm->ambient, (*it)["ambient"]);
-            readVec3(mm->diffuse, (*it)["diffuse"]);
-            readVec3(mm->specular, (*it)["specular"]);
+            if(!readVec3(mm->ambient, (*it)["ambient"])) {
+                m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": ambient should contain 3 elements");
+            }
+
+            if(!readVec3(mm->diffuse, (*it)["diffuse"])) {
+                m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": diffuse should contain 3 elements");
+            }
+
+            if(!readVec3(mm->specular, (*it)["specular"])) {
+                m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": specular should contain 3 elements");
+            }
+
             if((*it)["diffuseMap"].is_null()) {
                 mm->diffuseMap = nullptr;
             } else {
@@ -125,18 +132,27 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
                 std::string nm = (*it)["normalMap"];
                 mm->normalMap = readTextureManifest(nm);
             }
+
             if((*it)["mapping"].is_null()) {
                 mm->mipmappingEnabled = false;
                 mm->repeatX = mm->repeatY = 1;
                 mm->filtering = TEX_FILTER_NEAREST;
             } else if((*it)["mapping"].is_object()) {
-                mm->mipmappingEnabled = (*it)["mapping"]["mipampping"];
+                if((*it)["mapping"]["mipmapping"].is_boolean()) {
+                    mm->mipmappingEnabled = (*it)["mapping"]["mipmapping"];
+                } else {
+                    mm->mipmappingEnabled = false;
+                }
                 auto jr = (*it)["mapping"]["repeat"];
                 if(jr.is_null() || !jr.is_array()) {
                     mm->repeatX = mm->repeatY = 1;
                 } else {
                     glm::vec2 vv;
-                    readVec2(vv, jr);
+                    if(!readVec2(vv, jr)) {
+                        m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": mapping.repeat should contain 2 elements");
+                    }
+                    mm->repeatX = vv.x;
+                    mm->repeatY = vv.y;
                 }
                 if((*it)["mapping"]["filtering"].is_null()) {
                     mm->filtering = TEX_FILTER_NEAREST;
@@ -258,9 +274,17 @@ bool ResourceManager::createScene(const std::string &name) {
             if(jo["transform"].is_null()) {
                 objMan->scale = glm::vec3(1);
             } else {
-                readVec3(objMan->pos, jo["transform"]["position"]);
-                readVec3(objMan->rot, jo["transform"]["rotation"]);
-                readVec3(objMan->scale, jo["transform"]["scaling"]);
+                if(!readVec3(objMan->pos, jo["transform"]["position"])) {
+                    m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.position should contain 3 elements");
+                }
+
+                if(!readVec3(objMan->rot, jo["transform"]["rotation"])) {
+                    m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.rotation should contain 3 elements");
+                }
+
+                if(!readVec3(objMan->scale, jo["transform"]["scaling"])) {
+                    m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.rotation should contain 3 elements");
+                }
             }
             if(!jo["parent"].is_null()) {
                 objMan->parent = jo["parent"];
