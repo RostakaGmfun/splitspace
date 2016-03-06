@@ -7,6 +7,7 @@
 namespace splitspace {
 
 enum LightType {
+    LIGHT_UNKNOWN,
     LIGHT_AMBIENT,
     LIGHT_SUN,
     LIGHT_POINT,
@@ -19,6 +20,7 @@ struct LightManifest: public EntityManifest {
     LightType lightType;
     glm::vec3 diffuse;
     glm::vec3 specular;
+    float power;
 };
 
 class Light: public Entity {
@@ -35,6 +37,9 @@ public:
     const glm::vec3 &getDiffuse() const;
     const glm::vec3 &getSpecular() const;
     const LightType getType() const;
+    const float getPower() const;
+
+    static LightType getTypeFromName(const std::string &name);
 };
 
 }

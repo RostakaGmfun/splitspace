@@ -38,4 +38,22 @@ const LightType Light::getType() const {
     return static_cast<LightManifest *>(m_manifest)->lightType;
 }
 
+const float Light::getPower() const {
+    return static_cast<LightManifest *>(m_manifest)->power;
+}
+
+LightType Light::getTypeFromName(const std::string &name) {
+    if(name == "ambient") {
+        return LIGHT_AMBIENT;
+    } else if(name == "sun") {
+        return LIGHT_SUN;
+    } else if(name == "point") {
+        return LIGHT_POINT;
+    } else if(name == "spot") {
+        return LIGHT_SPOT;
+    } else {
+        return LIGHT_UNKNOWN;
+    }
+}
+
 }

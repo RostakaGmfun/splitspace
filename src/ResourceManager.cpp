@@ -6,6 +6,7 @@
 #include <splitspace/Material.hpp>
 #include <splitspace/Mesh.hpp>
 #include <splitspace/Scene.hpp>
+#include <splitspace/Light.hpp>
 #include <splitspace/RenderManager.hpp>
 
 #include <algorithm>
@@ -231,7 +232,6 @@ bool ResourceManager::createScene(const std::string &name) {
         return false;
     }
 
-    int numObjects = 0;
     ObjectManifest *objMan = nullptr;
     for(auto it = jobjects.begin();it!=jobjects.end();it++) {
         auto jo = (*it);
@@ -295,13 +295,59 @@ bool ResourceManager::createScene(const std::string &name) {
             if(objMan)
                 delete objMan;
         }
-        numObjects++;
         sceneMan->objects.push_back(objMan);
         addManifest(objMan);
     }
+
+    auto jlights = jscene["lights"];
+    if(jlights.is_null()) {
+        addManifest(sceneMan);
+        m_logMan->logInfo("(ResourceManager) Created manifest for Scene \""+name+"\"");
+        return true;
+    }
+    if(!jlights.is_array()) {
+        m_logMan->logErr("(ResourceManager) \""+name+"\": \"lights\" array expected");
+        return false;
+    }
+
+    LightManifest *lightMan = nullptr;
+    for(auto it = jlights.begin();it!=jlights.end();it++) {
+        auto jo = (*it);
+        if(jo["name"].is_null() || !jo["name"].is_string()) {
+            m_logMan->logErr("(ResourceManager) \""+name+"\": expected lights name");
+            delete sceneMan;
+            return false;
+        }
+        std::string lightName = jo["name"];
+        lightMan = new LightManifest();
+        if(!objMan) {
+            m_logMan->logErr("(ResourceManager) Out of memory");
+            delete sceneMan;
+            return false;
+        }
+        lightMan->name = lightName;
+        try {
+            std::string lightType = jo["type"];
+            lightMan->lightType = Light::getTypeFromName(lightType);
+            auto jtransform = jo["transform"];
+            if(!jtransform.is_null()) {
+                readVec3(lightMan->pos, jtransform["position"]);
+                readVec3(lightMan->rot, jtransform["rotation"]);
+            }
+            readVec3(lightMan->diffuse, jo["diffuse"]);
+            readVec3(lightMan->specular, jo["specular"]);
+            lightMan->power = jo["power"].is_null()?1.f:float(jo["power"]);
+        } catch(std::domain_error e) {
+            m_logMan->logErr("(ResourceManager) \""+lightName+"\":");
+            m_logMan->logErr("\tParse error: "+std::string(e.what()));
+            if(objMan)
+                delete objMan;
+        }
+        sceneMan->lights.push_back(lightMan);
+        addManifest(lightMan);
+    }
     addManifest(sceneMan);
     m_logMan->logInfo("(ResourceManager) Created manifest for Scene \""+name+"\"");
-
     return true;
 }
 
@@ -380,6 +426,10 @@ Resource *ResourceManager::loadResource(const std::string &name) {
             case RES_ENTITY: {
                 EntityManifest *m = static_cast<EntityManifest *>(it->second);
                 res = new Entity(m_engine, m);
+            break; }
+            case RES_LIGHT: {
+                LightManifest *m = static_cast<LightManifest *>(it->second);
+                res = new Light(m_engine, m);
             break; }
             default:
                 m_logMan->logErr("(ResourceManager) Unknown or unsupported Resource");
