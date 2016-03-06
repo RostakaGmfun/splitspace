@@ -48,13 +48,13 @@
         {
             "name": "sceneAmbient",
             "type": "ambient",
-            "color": [0.6, 0.6, 1]
+            "diffuse": [0.6, 0.6, 1]
         },
 
         {
             "name": "DirLight",
             "type": "sun",
-            "color": [1],
+            "diffuse": [1, 1, 1],
             "transform": {
                 "rotation": [20,45, 80]
             }
@@ -63,21 +63,21 @@
         {
             "name": "PointLight1",
             "type": "point",
-            "color": [1, 0, 0],
+            "diffuse": [1, 0, 0],
             "power": 100
         },
         
         {
             "name": "PointLight2",
             "type": "point",
-            "color": [0, 1, 0],
+            "diffuse": [0, 1, 0],
             "power": 100
         },
         
         {
             "name": "PointLight3",
             "type": "point",
-            "color": [0, 0, 1],
+            "diffuse": [0, 0, 1],
             "power": 100
         }
 

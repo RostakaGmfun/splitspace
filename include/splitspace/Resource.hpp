@@ -13,7 +13,8 @@ enum ResourceType {
     RES_OBJECT,
     RES_MESH,
     RES_SHADER,
-    RES_SCENE
+    RES_SCENE,
+    RES_LIGHT
 };
 
 struct ResourceManifest {
