@@ -49,13 +49,78 @@ bool Mesh::load() {
     
     if(scene->mNumMeshes>1) {
         m_logMan->logWarn("(Mesh) "+path+
-        " contains more than 1 mesh, onle first will be imported");
+        " contains more than 1 mesh, only first will be imported");
+    }
+
+    aiMesh *mesh = scene->mMeshes[0];
+
+    VertexFormat format;
+
+    format = VERTEX_3DN;
+
+    if(mesh->HasTextureCoords(0)) {
+        format = VERTEX_3DTN;
+    }
+
+    int numVerts = mesh->mNumVertices;
+    void *vertexData = nullptr;
+    switch(format) {
+        case VERTEX_3DT: {
+            Vertex3DT *verts = new Vertex3DT[numVerts];
+            for(int i = 0;i<numVerts;i++) {
+                verts[i].pos = glm::vec3(mesh->mVertices[i].x,
+                                         mesh->mVertices[i].y,
+                                         mesh->mVertices[i].z);
+                verts[i].texcoord = glm::vec2(mesh->mTextureCoords[0][i].x,
+                                              mesh->mTextureCoords[0][i].y);
+            }
+            vertexData = verts;
+        break;
+        }
+        case VERTEX_3DN: {
+            Vertex3DN *verts = new Vertex3DN[numVerts];
+            for(int i = 0;i<numVerts;i++) {
+                verts[i].pos = glm::vec3(mesh->mVertices[i].x,
+                                         mesh->mVertices[i].y,
+                                         mesh->mVertices[i].z);
+                verts[i].normal = glm::vec3(mesh->mVertices[i].x,
+                                            mesh->mVertices[i].y,
+                                            mesh->mVertices[i].z);
+            }
+            vertexData = verts;
+        break;
+        }
+        case VERTEX_3DTN: {
+            Vertex3DTN *verts = new Vertex3DTN[numVerts];
+            for(int i = 0;i<numVerts;i++) {
+                verts[i].pos = glm::vec3(mesh->mVertices[i].x,
+                                         mesh->mVertices[i].y,
+                                         mesh->mVertices[i].z);
+                verts[i].texcoord = glm::vec2(mesh->mTextureCoords[0][i].x,
+                                              1-mesh->mTextureCoords[0][i].y);
+                verts[i].texcoord*=0.5;
+                verts[i].normal = glm::vec3(mesh->mVertices[i].x,
+                                            mesh->mVertices[i].y,
+                                            mesh->mVertices[i].z);
+            }
+            vertexData = verts;
+        break;
+        }
+        default:
+            m_logMan->logErr("["+path+"]Wrong vertex format");
+            return false;
+    }
+
+    if(!m_renderMan->createMesh(vertexData, format, numVerts, m_vbo, m_vao)) {
+        m_logMan->logErr("["+path+"] Failed to create mesh");
+        return false;
     }
 
     return true;
 }
 
 void Mesh::unload() {
+    m_renderMan->destroyMesh(m_vao, m_vbo);
 }
 
 bool Mesh::createPlane() {
@@ -74,6 +139,7 @@ bool Mesh::createPlane() {
 }
 
 bool Mesh::createCube() {
+    //TODO
     return true;
 }
 
