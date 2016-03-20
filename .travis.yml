@@ -17,11 +17,11 @@ install:
     - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
     - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
     - sudo apt-get install libsdl2 libsdl2-dev
-    - ./install-json.sh
-    - ./install-catch.sh
-    - ./installSOIL.sh
-    - ./installGLM.sh
-    - ./install-assimp.sh
+    - ./third_party/install-json.sh
+    - ./third_party/install-catch.sh
+    - ./third_party/installSOIL.sh
+    - ./third_party/installGLM.sh
+    - ./third_party/install-assimp.sh
 
 script:
     - ./deploy.sh
