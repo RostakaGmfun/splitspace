@@ -34,6 +34,7 @@ set(ENGINE_SRC
     src/Material.cpp
     src/Mesh.cpp
     src/Light.cpp
+    src/Shader.cpp
     )
 
 set(DEMO_SRC
