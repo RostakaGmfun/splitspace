@@ -120,6 +120,10 @@ bool Engine::initResources() {
     if(!resManager->createSceneManifests(config->scenes)) {
         return false;
     }
+
+    if(!resManager->loadShaderSupport("")) {
+        return false;
+    }
     return true;
 }
 

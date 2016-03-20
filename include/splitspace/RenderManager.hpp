@@ -63,6 +63,13 @@ struct Vertex3DTN {
     glm::vec3 normal;
 };
 
+enum GLSLVersion {
+    GLSL_VER_130,
+    GLSL_VER_140,
+    GLSL_VER_150,
+    GLSL_VER_330
+};
+
 struct MeshData;
 struct TextureData;
 struct ShaderData;
@@ -81,10 +88,11 @@ public:
 
     void setScene(Scene *scn) { m_scene = scn; }
 
-    bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
-    bool createShader(const char *vs, const char *fs, const std::vector<ImageFormat> &outFormat, GLuint &glName);
+    bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
+    bool createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
+                      VertexFormat inputFormat, const std::vector<ImageFormat> &outFormat, GLuint &glName);
 
     void destroyMesh(GLuint &vao, GLuint &vbo);
     void destroyTexture(GLuint &texId);
@@ -97,8 +105,12 @@ public:
 
 private:
     void setupGL();
+
     bool createVAOAndVBO(GLuint &vao, GLuint &vbo);
     void destroyVAOAndVBO(GLuint &vao, GLuint &vbo);
+
+    bool compileShader(GLuint shader, const char *src, GLSLVersion ver);
+    bool linkProgram(GLuint program, GLuint vs, GLuint fs);
 
     std::size_t getTextureSize(const GLuint texId);
 

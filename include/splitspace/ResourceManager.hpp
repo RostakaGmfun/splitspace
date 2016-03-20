@@ -23,6 +23,8 @@ public:
     bool loadMaterialLib(const std::vector<std::string> &ml);
     bool loadMaterialLib(const std::string &name);
 
+    bool loadShaderSupport(const std::string &path);
+
     bool createSceneManifests(const std::vector<std::string> &names);
     bool createScene(const std::string &name);
 
@@ -36,6 +38,10 @@ public:
     int collectGarbage();
 
     void logStats();
+
+    std::string getShaderSupport() const {
+        return m_shaderSupport;
+    }
 
 private:
     TextureManifest *readTextureManifest(const std::string &name);
@@ -51,6 +57,8 @@ private:
     int m_totalResFails;
 
     std::string m_resPath;
+
+    std::string m_shaderSupport;
 };
 
 } // namespace splitspace

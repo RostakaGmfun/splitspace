@@ -4,6 +4,7 @@
 #include <splitspace/LogManager.hpp>
 #include <splitspace/Scene.hpp>
 #include <splitspace/Object.hpp>
+#include <splitspace/ResourceManager.hpp>
 
 #include <chrono>
 
@@ -292,6 +293,155 @@ void RenderManager::destroyVAOAndVBO(GLuint &vao, GLuint &vbo) {
         vao = 0;
     } else {
         m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Vertex Array type");
+    }
+}
+
+bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
+                      VertexFormat inputFormat, const std::vector<ImageFormat> &outFormat, GLuint &glName) {
+
+    if(!vsSrc || !fsSrc) {
+        m_logManager->logErr("(RenderManager) NULL shader source passed");
+        return false;
+    }
+
+    GLuint vs = 0, fs = 0;
+
+    auto cleanup = [&] {
+        if(vs) {
+            glDeleteShader(vs);
+            vs = 0;
+        }
+
+        if(fs) {
+            glDeleteShader(fs);
+            fs = 0;
+        }
+
+        if(glName) {
+            glDeleteProgram(glName);
+            glName = 0;
+        }
+    };
+
+    vs = glCreateShader(GL_VERTEX_SHADER);
+    if(!vs) {
+        m_logManager->logErr("(RenderManager) Failed to create VS Object");
+        cleanup();
+        return false;
+    }
+
+    fs = glCreateShader(GL_FRAGMENT_SHADER);
+    if(!fs) {
+        m_logManager->logErr("(RenderManager) Failed to create FS Object");
+        cleanup();
+        return false;
+    }
+
+    if(!compileShader(vs, vsSrc, vsVer)) {
+        cleanup();
+        return false;
+    }
+
+    if(!compileShader(fs, fsSrc, fsVer)) {
+        cleanup();
+        return false;
+    }
+
+    glName = glCreateProgram();
+    if(!glName) {
+        m_logManager->logErr("(RenderManager) Failed to create Program Object");
+        cleanup();
+        return false;
+    }
+
+    if(!linkProgram(glName, vs, fs)) {
+        cleanup();
+        return false;
+    }
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+
+    return true;
+}
+
+bool RenderManager::compileShader(GLuint shader, const char *src, GLSLVersion ver) {
+    static std::map<GLSLVersion, std::string> versions = {
+        { GLSL_VER_130, "130" },
+        { GLSL_VER_140, "140" },
+        { GLSL_VER_150, "150" },
+        { GLSL_VER_330, "330" },
+    };
+
+    std::string versionHeader = "#version "+ versions[ver] + "\n";
+
+    const GLchar **source = new const GLchar*[3];
+    source[0] = versionHeader.c_str();
+    source[1] = m_resManager->getShaderSupport().c_str();
+    source[2] = src;
+
+    glShaderSource(shader, 3, source, nullptr);
+
+    glCompileShader(shader);
+
+    GLint compileStatus, shaderType;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
+    glGetShaderiv(shader, GL_SHADER_TYPE, &shaderType);
+    std::string strType;
+    switch(shaderType) {
+        case GL_VERTEX_SHADER:
+            strType = "vertex";
+            break;
+        case GL_FRAGMENT_SHADER:
+            strType = "fragment";
+            break;
+        default:
+            strType = "";
+            break;
+    }
+    if(compileStatus!=GL_TRUE) {
+        m_logManager->logErr("(RenderManager) Failed to compile "+ strType +" shader");
+        GLint logSz;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logSz);
+        if(logSz>0) {
+            char *errMsg = new char[logSz];
+            glGetShaderInfoLog(shader, logSz, nullptr, errMsg);
+            m_logManager->logErr("\t" + std::string(errMsg));
+            delete [] errMsg;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+bool RenderManager::linkProgram(GLuint program, GLuint vs, GLuint fs) {
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+
+    glLinkProgram(program);
+    GLint linkStatus;
+    glGetProgramiv(program, GL_LINK_STATUS, &linkStatus);
+    if(linkStatus!=GL_TRUE) {
+        m_logManager->logErr("(RenderManager) Failed to link shader program");
+        GLint logSz;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logSz);
+        if(logSz>0) {
+            char *errMsg = new char[logSz];
+            glGetProgramInfoLog(program, logSz, nullptr, errMsg);
+            m_logManager->logErr("\t" + std::string(errMsg));
+            delete [] errMsg;
+        }
+        return false;
+    }
+
+    return true;
+}
+
+void RenderManager::destroyShader(GLuint &progId) {
+    if(progId && glIsProgram(progId)) {
+        glDeleteProgram(progId);
+        progId = 0;
     }
 }
 

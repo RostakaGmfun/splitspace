@@ -187,6 +187,11 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
     return true;
 }
 
+bool ResourceManager::loadShaderSupport(const std::string &path) {
+    // TODO
+    return true;
+}
+
 bool ResourceManager::createSceneManifests(const std::vector<std::string> &scenes) {
     for(auto it = scenes.begin();it!=scenes.end();it++) {
         if(!createScene(*it))
