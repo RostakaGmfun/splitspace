@@ -22,6 +22,7 @@ public:
 
     bool loadMaterialLib(const std::vector<std::string> &ml);
     bool loadMaterialLib(const std::string &name);
+    bool loadShaderLib(const std::string &name);
 
     bool loadShaderSupport(const std::string &path);
 

@@ -296,7 +296,7 @@ void RenderManager::destroyVAOAndVBO(GLuint &vao, GLuint &vbo) {
     }
 }
 
-bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
+bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,int vsVer, int fsVer,
                       VertexFormat inputFormat, const int numOutputs, GLuint &glName) {
 
     if(!vsSrc || !fsSrc) {
@@ -369,15 +369,9 @@ bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,GLSLVersio
     return true;
 }
 
-bool RenderManager::compileShader(GLuint shader, const char *src, GLSLVersion ver) {
-    static std::map<GLSLVersion, std::string> versions = {
-        { GLSL_VER_130, "130" },
-        { GLSL_VER_140, "140" },
-        { GLSL_VER_150, "150" },
-        { GLSL_VER_330, "330" },
-    };
+bool RenderManager::compileShader(GLuint shader, const char *src, int ver) {
 
-    std::string versionHeader = "#version "+ versions[ver] + "\n";
+    std::string versionHeader = "#version "+ std::to_string(ver) + "\n";
 
     const GLchar **source = new const GLchar*[3];
     source[0] = versionHeader.c_str();

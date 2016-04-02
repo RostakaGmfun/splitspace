@@ -1,0 +1,18 @@
+{
+    "shaders": [
+        {
+            "name": "basicShader",
+            "vsName": "basic.vs",
+            "fsName": "basic.fs",
+            "vsVersion": 300,
+            "fsVersion": 300,
+            "inputFormat": "VERTEX_3DTN",
+            "numOutputs": 1,
+            "uniforms": [
+                {"_MVP_": "MVP"},
+                {"_TEXTURE_": "texture"}
+            ]
+        }
+    ]
+}
+

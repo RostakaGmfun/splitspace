@@ -102,6 +102,9 @@ bool Config::parse(const std::string &path) {
             return false;
         }
     }
+    if(!jconfig["shaders"].is_null()) {
+        shaderLib = jconfig["shaders"];
+    }
 
     return true;
 }

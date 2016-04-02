@@ -51,6 +51,28 @@ bool Shader::load() {
     return true;
 }
 
+VertexFormat Shader::getInputFormatFromString(const std::string &f) {
+    if(f == "VERTEX_3DN") {
+        return VERTEX_3DN;
+    } else if(f == "VERTEX_3DT") {
+        return VERTEX_3DT;
+    } else if(f == "VERTEX_3DTN") {
+        return VERTEX_3DTN;
+    } else {
+        return VERTEX_UNKNOWN;
+    }
+}
+
+UniformType Shader::getUniformTypeFromString(const std::string &u) {
+    if(u == "_MVP_") {
+        return UNIFORM_MVP_MAT;
+    } else if(u == "_TEX_DIFFUSE_") {
+        return UNIFORM_TEX_DIFFUSE;
+    } else {
+        return UNIFORM_UNKNOWN;
+    }
+}
+
 void Shader::unload() {
 
 }

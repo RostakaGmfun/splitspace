@@ -33,7 +33,7 @@ public:
 
     std::vector<std::string> scenes;
     std::vector<std::string> matLibs;
-
+    std::string shaderLib;
 
 private:
     void fillDefaultWindow();

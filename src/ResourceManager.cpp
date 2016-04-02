@@ -8,6 +8,7 @@
 #include <splitspace/Scene.hpp>
 #include <splitspace/Light.hpp>
 #include <splitspace/RenderManager.hpp>
+#include <splitspace/Shader.hpp>
 
 #include <algorithm>
 #include <fstream>
@@ -188,7 +189,14 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
 }
 
 bool ResourceManager::loadShaderSupport(const std::string &path) {
-    // TODO
+    std::ifstream f(path);
+    if(!f.is_open()) {
+        m_logMan->logErr("(ResourceManager) failed to load shader support from "+path);
+        return false;
+    }
+    m_shaderSupport.assign(std::istreambuf_iterator<char>(f),
+                           std::istreambuf_iterator<char>());
+
     return true;
 }
 
@@ -197,6 +205,53 @@ bool ResourceManager::createSceneManifests(const std::vector<std::string> &scene
         if(!createScene(*it))
             return false;
     }
+    return true;
+}
+
+bool ResourceManager::loadShaderLib(const std::string &name) {
+    std::string path = "data/shaders/"+name+".json";
+    std::ifstream f(path);
+    if(!f.is_open()) {
+        m_logMan->logErr("(ResourceManager) Failed to load shader library from "+path);
+        return false;
+    }
+
+    json jshaders;
+
+    try {
+        jshaders << f;
+        jshaders = jshaders["shaders"];
+    } catch(std::domain_error e) {
+        m_logMan->logErr("ResourceManager) Failed to parse shader library "+path);
+        return false;
+    }
+
+    for(auto &shader : jshaders) {
+        try {
+            ShaderManifest *sm = new ShaderManifest;
+            if(!sm) {
+                m_logMan->logErr("(ResourceManager) Out of memory");
+                return false;
+            }
+            sm->name = shader["name"];
+            sm->vsName = shader["vsName"];
+            sm->fsName = shader["fsName"];
+            sm->vsVersion = shader["vsVersion"];
+            sm->fsVersion = shader["fsVersion"];
+            sm->inputFormat = Shader::getInputFormatFromString(shader["inputFormat"]);
+            sm->numOutputs = shader["numOutputs"];
+            for( auto &uniform : shader["uniforms"]) {
+                for(json::iterator u = uniform.begin();u!=uniform.end();u++) {
+                    sm->uniformMapping[u.value()] = Shader::getUniformTypeFromString(u.key());
+                }
+            }
+        } catch(std::domain_error e) {
+            m_logMan->logErr("(ResourceManager): "+path+":");
+            m_logMan->logErr("(ResorceManager): "+std::string(e.what()));
+            return false;
+        }
+    }
+
     return true;
 }
 

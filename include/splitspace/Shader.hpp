@@ -15,6 +15,7 @@ enum ShaderUsage {
 };
 
 enum UniformType {
+    UNIFORM_UNKNOWN,
     UNIFORM_VIEW_MAT,
     UNIFORM_PROJ_MAT,
     UNIFORM_MODEL_MAT,
@@ -32,17 +33,20 @@ struct ShaderManifest: public ResourceManifest {
     {}
     std::string vsName;
     std::string fsName;
-    GLSLVersion vsVersion;
-    GLSLVersion fsVersion;
+    int vsVersion;
+    int fsVersion;
     VertexFormat inputFormat;
     int numOutputs;
-    std::map<UniformType, std::string> uniformMapping;
+    std::map<std::string, UniformType> uniformMapping;
 };
 
 class Shader: public Resource {
 public:
     Shader(Engine *e, ShaderManifest *manifest);
     virtual ~Shader() { unload(); }
+
+    static VertexFormat getInputFormatFromString(const std::string &f);
+    static UniformType getUniformTypeFromString(const std::string &u);
 
     virtual bool load();
     virtual void unload();

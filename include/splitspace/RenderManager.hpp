@@ -24,6 +24,7 @@ class Object;
 class Material;
 
 enum VertexFormat {
+    VERTEX_UNKNOWN,
     VERTEX_3DT,
     VERTEX_3DN,
     VERTEX_3DTN
@@ -63,13 +64,6 @@ struct Vertex3DTN {
     glm::vec3 normal;
 };
 
-enum GLSLVersion {
-    GLSL_VER_130,
-    GLSL_VER_140,
-    GLSL_VER_150,
-    GLSL_VER_330
-};
-
 struct MeshData;
 struct TextureData;
 struct ShaderData;
@@ -91,7 +85,7 @@ public:
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
-    bool createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
+    bool createShader(const char *vsSrc, const char *fsSrc,int vsVer, int fsVer,
                       VertexFormat inputFormat, const int numOutputs, GLuint &glName);
 
     void destroyMesh(GLuint &vao, GLuint &vbo);
@@ -109,7 +103,7 @@ private:
     bool createVAOAndVBO(GLuint &vao, GLuint &vbo);
     void destroyVAOAndVBO(GLuint &vao, GLuint &vbo);
 
-    bool compileShader(GLuint shader, const char *src, GLSLVersion ver);
+    bool compileShader(GLuint shader, const char *src, int ver);
     bool linkProgram(GLuint program, GLuint vs, GLuint fs);
 
     std::size_t getTextureSize(const GLuint texId);

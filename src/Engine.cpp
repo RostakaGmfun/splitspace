@@ -121,7 +121,11 @@ bool Engine::initResources() {
         return false;
     }
 
-    if(!resManager->loadShaderSupport("")) {
+    if(!resManager->loadShaderLib(config->shaderLib)) {
+        return false;
+    }
+
+    if(!resManager->loadShaderSupport("data/shaders/splitspace.glsl")) {
         return false;
     }
     return true;
