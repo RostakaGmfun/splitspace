@@ -30,12 +30,12 @@ enum UniformType {
 struct ShaderManifest: public ResourceManifest {
     ShaderManifest(): ResourceManifest(RES_SHADER)
     {}
-    std::string vsPath;
-    std::string fsPath;
+    std::string vsName;
+    std::string fsName;
     GLSLVersion vsVersion;
     GLSLVersion fsVersion;
     VertexFormat inputFormat;
-    std::vector<ImageFormat> outputFormat;
+    int numOutputs;
     std::map<UniformType, std::string> uniformMapping;
 };
 

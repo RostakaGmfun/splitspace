@@ -297,7 +297,7 @@ void RenderManager::destroyVAOAndVBO(GLuint &vao, GLuint &vbo) {
 }
 
 bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
-                      VertexFormat inputFormat, const std::vector<ImageFormat> &outFormat, GLuint &glName) {
+                      VertexFormat inputFormat, const int numOutputs, GLuint &glName) {
 
     if(!vsSrc || !fsSrc) {
         m_logManager->logErr("(RenderManager) NULL shader source passed");
@@ -361,6 +361,10 @@ bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,GLSLVersio
 
     glDeleteShader(vs);
     glDeleteShader(fs);
+
+    for(int i = 0;i<numOutputs;i++) {
+        glBindFragDataLocation(glName, i, std::string("_OUT"+std::to_string(i)).c_str());
+    }
 
     return true;
 }

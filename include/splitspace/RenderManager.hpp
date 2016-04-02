@@ -92,7 +92,7 @@ public:
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
     bool createShader(const char *vsSrc, const char *fsSrc,GLSLVersion vsVer, GLSLVersion fsVer,
-                      VertexFormat inputFormat, const std::vector<ImageFormat> &outFormat, GLuint &glName);
+                      VertexFormat inputFormat, const int numOutputs, GLuint &glName);
 
     void destroyMesh(GLuint &vao, GLuint &vbo);
     void destroyTexture(GLuint &texId);
