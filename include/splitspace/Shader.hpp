@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 
+#include <glm/glm.hpp>
+
 namespace splitspace {
 
 enum ShaderUsage {
@@ -45,7 +47,6 @@ struct ShaderManifest: public ResourceManifest {
 class Shader: public Resource {
 public:
     Shader(Engine *e, ShaderManifest *manifest);
-    virtual ~Shader() { unload(); }
 
     static VertexFormat getInputFormatFromString(const std::string &f);
     static UniformType getUniformTypeFromString(const std::string &u);

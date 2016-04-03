@@ -52,6 +52,9 @@ public:
         return m_defaultShader;
     }
 
+    std::string printResources() const;
+    std::string printManifests() const;
+
 private:
     TextureManifest *readTextureManifest(const std::string &name);
 

@@ -29,7 +29,6 @@ typedef std::map<const Material *, std::vector<const Object *> > RenderMap;
 class Scene: public Resource {
 public:
     Scene(Engine *e, SceneManifest *manifest);
-    virtual ~Scene();
 
     virtual bool load();
     virtual void unload();

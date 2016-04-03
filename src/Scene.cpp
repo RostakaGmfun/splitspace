@@ -16,10 +16,6 @@ Scene::Scene(Engine *e, SceneManifest *manifest):
                         m_engine(e)
 {}
 
-Scene::~Scene() {
-    unload();
-}
-
 bool Scene::load() {
     if(!m_manifest) {
         m_logMan->logErr("(Scene) null scene manifest specified");
@@ -78,10 +74,12 @@ bool Scene::load() {
         
     }
 
+    m_isLoaded = true;
     return true;
 }
 
 void Scene::unload() {
+    m_isLoaded = false;
 }
 
 } // namespace splitspace

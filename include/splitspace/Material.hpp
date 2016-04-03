@@ -31,7 +31,6 @@ struct MaterialManifest: public ResourceManifest {
 class Material: public Resource {
 public:
     Material(Engine *e, MaterialManifest *manifest);
-    virtual ~Material() { unload(); }
 
     virtual bool load();
     virtual void unload();
@@ -39,6 +38,7 @@ public:
 private:
     Texture *m_diffuseMap;
     Texture *m_normalMap;
+    GLuint m_samplerId;
 };
 
 } // namespace splitspace

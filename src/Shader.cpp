@@ -17,7 +17,7 @@ bool Shader::load() {
         return false;
     }
 
-    auto loadShader = [this](char *&src, std::string name) -> bool {
+    auto loadShader = [this](std::string &src, std::string name) -> bool {
         std::ifstream in(m_resMan->getResPath()+"shaders/"+name);
         if(!in.is_open()) {
             m_logMan->logErr("(Shader) Failed to load "+
@@ -25,19 +25,17 @@ bool Shader::load() {
             return false;
         }
 
-        in.seekg(0, std::ios::end);
-        std::size_t sz = in.tellg();
-        in.seekg(0, std::ios::beg);
-        src = new char[sz+1];
-        in.read(src, sz);
+        src.assign(std::istreambuf_iterator<char>(in),
+                   std::istreambuf_iterator<char>());
+
         in.close();
         return true;
     };
 
 
     ShaderManifest *sm = static_cast<ShaderManifest *>(m_manifest);
-    char *vsSrc = nullptr;
-    char *fsSrc = nullptr;
+    std::string vsSrc;
+    std::string fsSrc;
     if(!loadShader(vsSrc, sm->vsName)) {
         return false;
     }
@@ -45,11 +43,11 @@ bool Shader::load() {
         return false;
     }
 
-    if(!m_renderMan->createShader(vsSrc, fsSrc, sm->vsVersion, sm->fsVersion,
+    if(!m_renderMan->createShader(vsSrc.c_str(), fsSrc.c_str(), sm->vsVersion, sm->fsVersion,
                                 sm->inputFormat, sm->numOutputs, m_programId)) {
         return false;
     }
-
+    m_isLoaded = true;
     return true;
 }
 
@@ -76,7 +74,9 @@ UniformType Shader::getUniformTypeFromString(const std::string &u) {
 }
 
 void Shader::unload() {
-
+    m_logMan->logInfo("(Shader) Unloading "+m_manifest->name);
+    m_renderMan->destroyShader(m_programId);
+    m_isLoaded = false;
 }
 
 }

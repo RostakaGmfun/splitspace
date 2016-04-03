@@ -38,7 +38,7 @@ bool Object::load() {
     if(!m_mesh) {
         return false;
     }
-
+    m_isLoaded = true;
     return true;    
 }
 
@@ -47,7 +47,8 @@ void Object::update(float dt) {
 }
 
 void Object::unload() {
-
+    m_logMan->logInfo("(Object) Unloading "+m_manifest->name);
+    m_isLoaded = false;
 }
 
 } // namespace splitspace

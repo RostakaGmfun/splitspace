@@ -14,10 +14,6 @@ Texture::Texture(Engine *e, TextureManifest *manifest): Resource(e, manifest),
                                                                  m_glName(0)
 {}
 
-Texture::~Texture() {
-    unload();
-}
-
 bool Texture::load() {
     if(!m_manifest) {
         m_logMan->logErr("(Texture) No manifest specified");
@@ -29,7 +25,6 @@ bool Texture::load() {
                                           &m_numChannels, SOIL_LOAD_AUTO);
     if(!m_data) {
         m_logMan->logErr("(Texture) Error loading texture from file " + m_manifest->name);
-        unload();
         return false;
     }
    
@@ -47,7 +42,6 @@ bool Texture::load() {
         default:
             m_logMan->logErr("(Texture) Unsupported texture format with "
                             +std::to_string(m_numChannels)+" channels.");
-            unload();
             return false;
     }
 
@@ -56,12 +50,14 @@ bool Texture::load() {
         unload();
         return false;
     }
-                                         
+    m_isLoaded = true;
     return true;
 }
 
 void Texture::unload() {
-
+    m_logMan->logInfo("(Texture) Unloading "+m_manifest->name);
+    m_renderMan->destroyTexture(m_glName);
+    m_isLoaded = false;
 }
 
 } // namespace splitspace

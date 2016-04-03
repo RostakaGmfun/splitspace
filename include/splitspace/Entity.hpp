@@ -26,7 +26,6 @@ class Entity: public Resource {
 public:
     
     Entity(Engine *e, EntityManifest *manifest, Entity *parent = nullptr);
-    virtual ~Entity() {}
     
     const glm::mat4 &getWorld() const { return m_world; }
     const glm::vec3 &getPos() const { return m_pos; }
@@ -45,8 +44,8 @@ public:
 
     virtual void update(float dt);
 
-    virtual bool load() { return true; }
-    virtual void unload() {}
+    virtual bool load();
+    virtual void unload();
 
 protected:
     void updateTransform();

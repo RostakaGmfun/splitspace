@@ -166,12 +166,8 @@ std::size_t RenderManager::getTextureSize(const GLuint texId) {
 }
     
 void RenderManager::destroyTexture(GLuint &texId) {
-    if(glIsTexture(texId)) {
-        glDeleteTextures(1, &texId);
-        texId = 0;
-    } else {
-        m_logManager->logWarn("(RenderManager) Trying to destroy GL object which does not appear to be of Texture type");
-    }
+    glDeleteTextures(1, &texId);
+    texId = 0;
 }
 
 bool RenderManager::createSampler(bool useMipmaps, TextureFiltering filtering, 

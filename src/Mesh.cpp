@@ -116,11 +116,14 @@ bool Mesh::load() {
         return false;
     }
 
+    m_isLoaded = true;
     return true;
 }
 
 void Mesh::unload() {
+    m_logMan->logInfo("(Mesh) Unloading "+m_manifest->name);
     m_renderMan->destroyMesh(m_vao, m_vbo);
+    m_isLoaded = false;
 }
 
 bool Mesh::createPlane() {

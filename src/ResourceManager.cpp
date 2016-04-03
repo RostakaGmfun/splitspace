@@ -530,8 +530,91 @@ Resource *ResourceManager::loadResource(const std::string &name) {
 }
 
 void ResourceManager::destroy() {
+    for(auto &resource : m_resourceCache) {
+        unloadResource(resource.first);
+        delete resource.second;
+    }
 
+    for(auto &manifest : m_resourceManifests) {
+        delete manifest.second;
+    }
 }
+
+std::string ResourceManager::printResources() const {
+    std::string outStr = "";
+    for(const auto &resource : m_resourceCache) {
+        outStr+="Resource "+resource.first + " of type ";
+        switch(resource.second->getType()) {
+            case RES_SCENE:
+                outStr+="Scene";
+            break;
+            case RES_ENTITY:
+                outStr+="Entity";
+            break;
+            case RES_SHADER:
+                outStr+="Shader";
+            break;
+            case RES_MESH:
+                outStr+="Mesh";
+            break;
+            case RES_LIGHT:
+                outStr+="Light";
+            break;
+            case RES_OBJECT:
+                outStr+="Object";
+            break;
+            case RES_TEXTURE:
+                outStr+="Texture";
+            break;
+            case RES_MATERIAL:
+                outStr+="Material";
+            break;
+            case RES_UNKNOWN:
+                outStr+="Unknown";
+            break;
+        }
+        outStr+="\n";
+    }
+    return outStr;
+}
+
+std::string ResourceManager::printManifests() const {
+    std::string outStr = "";
+    for(const auto &manifest : m_resourceManifests) {
+        outStr+="Manifest for "+manifest.first + " of type ";
+        switch(manifest.second->type) {
+            case RES_SCENE:
+                outStr+="Scene";
+            break;
+            case RES_ENTITY:
+                outStr+="Entity";
+            break;
+            case RES_SHADER:
+                outStr+"Shader";
+            break;
+            case RES_MESH:
+                outStr+="Mesh";
+            break;
+            case RES_LIGHT:
+                outStr+="Light";
+            break;
+            case RES_OBJECT:
+                outStr+="Object";
+            break;
+            case RES_TEXTURE:
+                outStr+="Texture";
+            break;
+            case RES_MATERIAL:
+                outStr+="Material";
+            break;
+            case RES_UNKNOWN:
+                outStr+="Unknown";
+        }
+        outStr+="\n";
+    }
+    return outStr;
+}
+
 
 bool ResourceManager::unloadResource(const std::string &name) {
     if(name.empty()) {

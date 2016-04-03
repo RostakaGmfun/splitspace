@@ -40,14 +40,17 @@ bool Material::load() {
         }
     }
 
+    if(!m_renderMan->createSampler(mm->mipmappingEnabled, mm->filtering, m_samplerId)) {
+        return false;
+    }
+
+    m_isLoaded = true;
+
     return true;
 }
 
 void Material::unload() {
-    if(m_diffuseMap)
-        m_diffuseMap->unload();
-    if(m_normalMap)
-        m_normalMap->unload();
+    m_isLoaded = false;
 }
 
 } // namepsace splitspace

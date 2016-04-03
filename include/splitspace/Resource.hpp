@@ -32,10 +32,10 @@ class ResourceManager;
 class Resource {
 public:
     Resource(Engine *e,ResourceManifest *manifest);
-    virtual ~Resource() { }
+    virtual ~Resource();
 
     virtual bool load() = 0;
-    virtual void unload() = 0;
+    virtual void unload() {}
 
     void incRefCount();
     void decRefCount();
@@ -45,6 +45,7 @@ public:
 
 protected:
     int m_refCount;
+    bool m_isLoaded;
     ResourceManifest *m_manifest;
     LogManager *m_logMan;
     RenderManager *m_renderMan;

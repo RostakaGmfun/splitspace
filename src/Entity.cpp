@@ -14,6 +14,11 @@ Entity::Entity(Engine *e, EntityManifest *manifest,Entity *parent):
     }
 }
 
+bool Entity::load() {
+    m_isLoaded = true;
+    return true;
+}
+
 bool Entity::setParent(Entity *p) {
     if(m_parent && m_parent!=p) {
         m_parent->removeChild(this);
@@ -81,6 +86,10 @@ void Entity::updateChildren(float dt) {
     for(auto it = m_children.begin(); it!=m_children.end();it++) {
         (*it)->update(dt);
     }
+}
+
+void Entity::unload() {
+    m_isLoaded = false;
 }
 
 

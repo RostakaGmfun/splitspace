@@ -14,8 +14,9 @@ public:
     MyListener(): EventListener(EVM_WINDOW|EVM_INPUT, "MyListener")
     {}
     virtual void onEvent(Event *e) {
-        if(e->type == EV_QUIT)
+        if(e->type == EV_QUIT) {
             engine.shutdown();
+        }
         if(e->type == EV_KEY) {
             std::cout << "Key " << ((static_cast<KeyboardEvent *>(e))->state == KEY_PRESS?"pressed":"released") << std::endl;
         }
@@ -26,13 +27,19 @@ public:
 };
 
 int main() {
-    if(!engine.init())
+    if(!engine.init()) {
         return 1;
+    }
+
     Scene *scene = static_cast<Scene *>(engine.resManager->loadResource("demoScene"));
-    if(!scene)
+    if(!scene) {
         return 1;
+    }
     
     engine.renderManager->setScene(scene);
+
+    std::cout << engine.resManager->printManifests();
+    std::cout << engine.resManager->printResources();
 
     engine.eventManager->addListener(new MyListener()); 
     engine.mainLoop();

@@ -15,7 +15,6 @@ struct MeshManifest: public ResourceManifest {
 class Mesh: public Resource {
 public:
     Mesh(Engine *e, MeshManifest *manifest);
-    virtual ~Mesh() { unload(); }
 
     virtual bool load();
     virtual void unload();

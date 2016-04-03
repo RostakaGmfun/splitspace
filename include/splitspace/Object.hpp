@@ -21,7 +21,6 @@ struct ObjectManifest: public EntityManifest {
 class Object: public Entity {
 public:
     Object(Engine *e, ObjectManifest *manifest, Entity *parent = nullptr);
-    virtual ~Object() { unload(); }
 
     virtual void update(float dt);
 

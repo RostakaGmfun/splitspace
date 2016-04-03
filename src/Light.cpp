@@ -11,11 +11,12 @@ void Light::update(float dt) {
 }
 
 bool Light::load() {
+    m_isLoaded = true;
     return true;
 }
 
 void Light::unload() {
-
+    m_isLoaded = false;
 }
 
 const glm::vec3 &Light::getPosition() const {

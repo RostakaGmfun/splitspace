@@ -15,7 +15,6 @@ struct TextureManifest: public ResourceManifest {
 class Texture: public Resource {
 public:
     Texture(Engine *e, TextureManifest *manifest);
-    virtual ~Texture();
 
     virtual bool load();
     virtual void unload();

@@ -28,7 +28,6 @@ struct LightManifest: public EntityManifest {
 class Light: public Entity {
 public:
     Light(Engine *e, LightManifest *manifest, Entity *poarent = nullptr);
-    virtual ~Light() { unload(); }
 
     virtual void update(float dt);
     virtual bool load();
