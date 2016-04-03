@@ -34,7 +34,7 @@ bool Mesh::load() {
          
     Assimp::Importer importer;
 
-    std::string path = "data/meshes/"+m_manifest->name;
+    std::string path = m_resMan->getResPath()+"meshes/"+m_manifest->name;
 
     const aiScene *scene = importer.ReadFile(path.c_str(),
             aiProcess_CalcTangentSpace  |

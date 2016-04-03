@@ -1,5 +1,6 @@
 #include <splitspace/Shader.hpp>
 #include <splitspace/LogManager.hpp>
+#include <splitspace/ResourceManager.hpp>
 
 #include <fstream>
 
@@ -17,9 +18,10 @@ bool Shader::load() {
     }
 
     auto loadShader = [this](char *&src, std::string name) -> bool {
-        std::ifstream in("data/shaders/"+name);
+        std::ifstream in(m_resMan->getResPath()+"shaders/"+name);
         if(!in.is_open()) {
-            m_logMan->logErr("(Shader) Failed to load data/shaders/"+name);
+            m_logMan->logErr("(Shader) Failed to load "+
+                            m_resMan->getResPath()+"shaders/"+name);
             return false;
         }
 
@@ -43,7 +45,7 @@ bool Shader::load() {
         return false;
     }
 
-    if(m_renderMan->createShader(vsSrc, fsSrc, sm->vsVersion, sm->fsVersion,
+    if(!m_renderMan->createShader(vsSrc, fsSrc, sm->vsVersion, sm->fsVersion,
                                 sm->inputFormat, sm->numOutputs, m_programId)) {
         return false;
     }

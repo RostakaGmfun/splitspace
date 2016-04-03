@@ -20,6 +20,8 @@ struct LightManifest: public EntityManifest {
     LightType lightType;
     glm::vec3 diffuse;
     glm::vec3 specular;
+    // cosine of angle for spot light
+    float spotLightCutoff;
     float power;
 };
 

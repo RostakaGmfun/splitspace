@@ -26,7 +26,6 @@ struct MaterialManifest: public ResourceManifest {
     TextureFiltering filtering;
     bool mipmappingEnabled;
     TextureUsage usage;
-
 };
 
 class Material: public Resource {

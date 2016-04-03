@@ -209,7 +209,7 @@ bool ResourceManager::createSceneManifests(const std::vector<std::string> &scene
 }
 
 bool ResourceManager::loadShaderLib(const std::string &name) {
-    std::string path = "data/shaders/"+name+".json";
+    std::string path = m_resPath+"shaders/"+name+".json";
     std::ifstream f(path);
     if(!f.is_open()) {
         m_logMan->logErr("(ResourceManager) Failed to load shader library from "+path);
@@ -220,6 +220,11 @@ bool ResourceManager::loadShaderLib(const std::string &name) {
 
     try {
         jshaders << f;
+        if(jshaders["_DEFAULT_SHADER_"].is_null()) {
+            m_logMan->logErr("(ResourceManager) No _DEFAULT_SHADER_ specified in "+path);
+            return false;
+        }
+        m_defaultShader = jshaders["_DEFAULT_SHADER_"];
         jshaders = jshaders["shaders"];
     } catch(std::domain_error e) {
         m_logMan->logErr("ResourceManager) Failed to parse shader library "+path);
@@ -245,6 +250,7 @@ bool ResourceManager::loadShaderLib(const std::string &name) {
                     sm->uniformMapping[u.value()] = Shader::getUniformTypeFromString(u.key());
                 }
             }
+            addManifest(sm);
         } catch(std::domain_error e) {
             m_logMan->logErr("(ResourceManager): "+path+":");
             m_logMan->logErr("(ResorceManager): "+std::string(e.what()));
@@ -491,6 +497,10 @@ Resource *ResourceManager::loadResource(const std::string &name) {
                 LightManifest *m = static_cast<LightManifest *>(it->second);
                 res = new Light(m_engine, m);
             break; }
+            case RES_SHADER: {
+                ShaderManifest *m = static_cast<ShaderManifest *>(it->second);
+                res = new Shader(m_engine, m);
+            break; }
             default:
                 m_logMan->logErr("(ResourceManager) Unknown or unsupported Resource");
                 m_totalResFails++;
@@ -517,7 +527,6 @@ Resource *ResourceManager::loadResource(const std::string &name) {
 
     Resource *r = m_resourceCache[name];
     return r;
-
 }
 
 void ResourceManager::destroy() {

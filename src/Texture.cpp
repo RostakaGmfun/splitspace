@@ -1,5 +1,6 @@
 #include <splitspace/Texture.hpp>
 #include <splitspace/LogManager.hpp>
+#include <splitspace/ResourceManager.hpp>
 
 #include <SOIL/SOIL.h>
 
@@ -23,7 +24,7 @@ bool Texture::load() {
         return false;
     }
     
-    std::string path = "data/textures/"+m_manifest->name;
+    std::string path = m_resMan->getResPath()+"textures/"+m_manifest->name;
     m_data = SOIL_load_image(path.c_str(), &m_width, &m_height,
                                           &m_numChannels, SOIL_LOAD_AUTO);
     if(!m_data) {

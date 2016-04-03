@@ -40,8 +40,16 @@ public:
 
     void logStats();
 
+    std::string getResPath() const {
+        return m_resPath;
+    }
+
     std::string getShaderSupport() const {
         return m_shaderSupport;
+    }
+
+    std::string getDefaultShader() const {
+        return m_defaultShader;
     }
 
 private:
@@ -60,6 +68,7 @@ private:
     std::string m_resPath;
 
     std::string m_shaderSupport;
+    std::string m_defaultShader;
 };
 
 } // namespace splitspace
