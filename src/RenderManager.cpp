@@ -5,6 +5,7 @@
 #include <splitspace/Scene.hpp>
 #include <splitspace/Object.hpp>
 #include <splitspace/ResourceManager.hpp>
+#include <splitspace/Shader.hpp>
 
 #include <chrono>
 
@@ -12,6 +13,7 @@
 namespace splitspace {
 RenderManager::RenderManager(Engine *e): m_winManager(e->windowManager),
                                          m_logManager(e->logManager),
+                                         m_resManager(e->resManager),
                                          m_window(m_winManager->getSDLWindow()),
                                          m_frameDrawCalls(0),
                                          m_totalDrawCalls(0),
@@ -20,7 +22,9 @@ RenderManager::RenderManager(Engine *e): m_winManager(e->windowManager),
                                          m_totalTextures(0),
                                          m_totalFrames(0),
                                          m_averageFrameTime(0),
-                                         m_memoryUsed(0)
+                                         m_memoryUsed(0),
+                                         m_scene(nullptr),
+                                         m_shader(nullptr)
 
 {}
 
@@ -80,6 +84,13 @@ bool RenderManager::init(bool vsync) {
     }
 
     setupGL();
+
+    m_shader = static_cast<Shader*>(m_resManager->loadResource(m_resManager->getDefaultShader()));
+    if(!m_shader) {
+        m_logManager->logErr("(RenderManager) Failed to load default shader "+
+                             m_resManager->getDefaultShader());
+        return false;
+    }
 
     return true;
 }
@@ -365,7 +376,7 @@ bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,int vsVer,
     for(int i = 0;i<numOutputs;i++) {
         glBindFragDataLocation(glName, i, std::string("_OUT"+std::to_string(i)).c_str());
     }
-
+    m_totalShaders++;
     return true;
 }
 

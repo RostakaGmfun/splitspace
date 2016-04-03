@@ -133,7 +133,7 @@ private:
     int m_memoryUsed;
 
     Scene *m_scene;
-
+    Shader *m_shader;
 };
 
 } // namespace splitspace
