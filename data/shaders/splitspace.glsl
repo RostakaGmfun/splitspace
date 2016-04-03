@@ -10,6 +10,29 @@
 #define RENDER_LAMBERT
 #define RENDER_PHONG
 
+/*
+ * Material definitions
+ */
+struct Material {
+    vec3 ambient;
+    vec4 diffuse;
+    vec3 specular;
+    bool isTextured;
+};
+
+vec4 applyMaterial(Material material, sampler2D diffuse, vec2 uv) {
+    if(material.isTextured) {
+        return material.diffuse;
+    } else {
+        return texture(diffuse, uv);
+    }
+}
+
+
+/*
+ * Lighting definitions
+ */
+
 struct LightInfo {
     vec3 position;
     vec3 rotation;
@@ -24,6 +47,8 @@ struct LightInfo {
 #define LIGHT_SUN     2
 #define LIGHT_POINT   3
 #define LIGHT_SPOT    4
+
+// Size of LightInfo array
 #define MAX_LIGHTS    8
 
 vec3 lambertLighting(vec3 vertex, vec3 normal, LightInfo light) {
@@ -40,17 +65,18 @@ vec3 lambertLighting(vec3 vertex, vec3 normal, LightInfo light) {
     }
 }
 
-vec3 phongLighting(vec3 vertex, vec3 normal, LightInfo light) {
+vec3 phongLighting(vec3 vertex, vec3 normal, LightInfo light, Material material) {
     //TODO
     return vec3(0, 0, 0);
 }
 
-vec3 splitspace_Lighting(int technique, vec3 vertex, vec3 normal, LightInfo light) {
+vec3 splitspace_Lighting(int technique, vec3 vertex, vec3 normal,
+                               LightInfo light, Material material) {
     switch(technique) {
         case 1:
             return lambertLighting(vertex, normal, light);
         case 2:
-            return phongLighting(vertex, normal, light);
+            return phongLighting(vertex, normal, light, material);
         default:
             return vec3(0, 0, 0);
     }
