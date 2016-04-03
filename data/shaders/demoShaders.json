@@ -10,7 +10,10 @@
             "numOutputs": 1,
             "uniforms": [
                 {"_MVP_": "MVP"},
-                {"_TEX_DIFFUSE_": "diffuseTexture"}
+                {"_TEX_DIFFUSE_": "diffuseMap"},
+                {"_LIGHT_STRUCT_": "lights"},
+                {"_NUM_LIGHTS_": "numLights"},
+                {"_MATERIAL_STRUCT_": "material"}
             ]
         }
     ],

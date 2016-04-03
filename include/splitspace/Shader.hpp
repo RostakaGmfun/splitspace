@@ -25,7 +25,9 @@ enum UniformType {
     UNIFORM_TEX_NORMAL,
 
     UNIFORM_LIGHT_STRUCT,
-    UNIFORM_SHADING_TYPE
+    UNIFORM_NUM_LIGHTS,
+
+    UNIFORM_MATERIAL_STRUCT
 };
 
 struct ShaderManifest: public ResourceManifest {

@@ -4,13 +4,6 @@
  */
 
 /*
- * Rendering techinques
- */
-
-#define RENDER_LAMBERT
-#define RENDER_PHONG
-
-/*
  * Material definitions
  */
 struct Material {
@@ -18,7 +11,15 @@ struct Material {
     vec4 diffuse;
     vec3 specular;
     bool isTextured;
+    int technique;
 };
+
+/*
+ * Rendering techinques
+ */
+
+#define RENDER_LAMBERT 1
+#define RENDER_PHONG   2
 
 vec4 applyMaterial(Material material, sampler2D diffuse, vec2 uv) {
     if(material.isTextured) {
@@ -70,12 +71,12 @@ vec3 phongLighting(vec3 vertex, vec3 normal, LightInfo light, Material material)
     return vec3(0, 0, 0);
 }
 
-vec3 splitspace_Lighting(int technique, vec3 vertex, vec3 normal,
+vec3 splitspace_Lighting(vec3 vertex, vec3 normal,
                                LightInfo light, Material material) {
-    switch(technique) {
-        case 1:
+    switch(material.technique) {
+        case RENDER_LAMBERT:
             return lambertLighting(vertex, normal, light);
-        case 2:
+        case RENDER_PHONG:
             return phongLighting(vertex, normal, light, material);
         default:
             return vec3(0, 0, 0);

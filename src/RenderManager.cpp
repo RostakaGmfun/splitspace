@@ -70,7 +70,7 @@ bool RenderManager::init(bool vsync) {
 
     if(vsync) {
         if(SDL_GL_SetSwapInterval(-1)) {
-            m_logManager->logWarn("(RendrManager) Failed to enable late swap tearing, falling back to vsync");
+            m_logManager->logWarn("(RenderManager) Failed to enable late swap tearing, falling back to vsync");
             if(SDL_GL_SetSwapInterval(1)) {
                 m_logManager->logWarn("(RenderManager) Failed to enable vsync");
             } else {
