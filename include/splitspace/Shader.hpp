@@ -55,7 +55,16 @@ public:
     virtual void unload();
 
 private:
+    void initUniforms(const std::map<std::string, UniformType> &mapping);
+
+private:
     GLuint m_programId;
+    struct Uniform {
+        GLuint id;
+        UniformType type;
+    };
+
+    std::map<std::string, Uniform> m_uniforms;
 };
 
 }

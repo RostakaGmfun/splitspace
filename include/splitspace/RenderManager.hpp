@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
+#include <glm/matrix.hpp>
 
 namespace splitspace {
 
@@ -96,6 +97,8 @@ public:
     void logStats();
     int getFrameDrawCalls() const { return m_frameDrawCalls; }
     int getTotalDrawCalls() const { return m_totalDrawCalls; }
+
+    GLuint getUniformId(GLuint programId, const char *name);
 
 private:
     void setupGL();

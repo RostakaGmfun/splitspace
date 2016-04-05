@@ -450,6 +450,10 @@ void RenderManager::destroyShader(GLuint &progId) {
     }
 }
 
+GLuint RenderManager::getUniformId(GLuint programId, const char *name) {
+    return glGetUniformLocation(programId, name);
+}
+
 void RenderManager::setupGL() {
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f,0.1f,0.1f,1.0f);

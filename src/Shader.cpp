@@ -47,6 +47,9 @@ bool Shader::load() {
                                 sm->inputFormat, sm->numOutputs, m_programId)) {
         return false;
     }
+
+    initUniforms(sm->uniformMapping);
+
     m_isLoaded = true;
     return true;
 }
@@ -70,6 +73,51 @@ UniformType Shader::getUniformTypeFromString(const std::string &u) {
         return UNIFORM_TEX_DIFFUSE;
     } else {
         return UNIFORM_UNKNOWN;
+    }
+}
+
+void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
+    static const std::string matProps[] = {
+        "ambient",
+        "diffuse",
+        "specular",
+        "isTextured",
+        "technique"
+    };
+
+    static const std::string lightProps[] = {
+        "position",
+        "rotation",
+        "diffuse",
+        "specular",
+        "spotLightCutoff",
+        "power",
+        "type"
+    };
+
+    for(const auto &u : mapping) {
+        switch(u.second) {
+            case UNIFORM_MATERIAL_STRUCT: {
+                for(const auto &prop : matProps) {
+                    std::string name = u.first+"."+prop;
+                    m_uniforms[name] = Uniform{m_renderMan->getUniformId(m_programId, name.c_str()), u.second};
+                }
+                break;
+            }
+            case UNIFORM_LIGHT_STRUCT: {
+                //TODO unify MAX_LIGHTS in GLSL and C++
+                for(int i = 0;i<8;i++) {
+                    for(const auto &prop : lightProps) {
+                        std::string name = u.first+"["+std::to_string(i)+"]."+prop;
+                        m_uniforms[name] = Uniform{m_renderMan->getUniformId(m_programId, name.c_str()), u.second};
+                    }
+                }
+                break;
+            }
+            default:
+                m_uniforms[u.first] = Uniform{m_renderMan->getUniformId(m_programId, u.first.c_str()),u.second};
+                break;
+        }
     }
 }
 
