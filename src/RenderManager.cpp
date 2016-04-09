@@ -323,8 +323,8 @@ void RenderManager::destroyVAOAndVBO(GLuint &vao, GLuint &vbo) {
     }
 }
 
-bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,int vsVer, int fsVer,
-                      VertexFormat inputFormat, const int numOutputs, GLuint &glName) {
+bool RenderManager::createShader(const char *vsSrc, const char *fsSrc,int vsVer,
+                                 int fsVer,const int numOutputs, GLuint &glName) {
 
     if(!vsSrc || !fsSrc) {
         m_logManager->logErr("(RenderManager) NULL shader source passed");

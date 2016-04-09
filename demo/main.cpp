@@ -61,11 +61,11 @@ public:
 
 private:
     void handleKey(const KeyboardEvent *kbev) {
-
+        static_cast<void>(kbev);
     }
 
     void handleMouse(const MouseEvent *mev) {
-
+        static_cast<void>(mev);
     }
 
     void handleUpdate(const UpdateEvent *uev) {

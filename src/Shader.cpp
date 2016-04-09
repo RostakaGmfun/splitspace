@@ -49,8 +49,8 @@ bool Shader::load() {
         return false;
     }
 
-    if(!m_renderMan->createShader(vsSrc.c_str(), fsSrc.c_str(), sm->vsVersion, sm->fsVersion,
-                                sm->inputFormat, sm->numOutputs, m_programId)) {
+    if(!m_renderMan->createShader(vsSrc.c_str(), fsSrc.c_str(), sm->vsVersion,
+                                  sm->fsVersion, sm->numOutputs, m_programId)) {
         return false;
     }
 

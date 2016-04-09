@@ -88,8 +88,8 @@ public:
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
     bool createMesh(const void *vData, VertexFormat format, int numVerts, GLuint &vboName, GLuint &vaoName);
-    bool createShader(const char *vsSrc, const char *fsSrc,int vsVer, int fsVer,
-                      VertexFormat inputFormat, const int numOutputs, GLuint &glName);
+    bool createShader(const char *vsSrc, const char *fsSrc,int vsVer,
+                      int fsVer, const int numOutputs, GLuint &glName);
 
     void destroyMesh(GLuint &vao, GLuint &vbo);
     void destroyTexture(GLuint &texId);

@@ -37,8 +37,8 @@ public:
     const glm::vec3 &getRotation() const;
     const glm::vec3 &getDiffuse() const;
     const glm::vec3 &getSpecular() const;
-    const LightType getType() const;
-    const float getPower() const;
+    LightType getType() const;
+    float getPower() const;
 
     static LightType getTypeFromName(const std::string &name);
 };

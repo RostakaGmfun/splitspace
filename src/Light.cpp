@@ -7,7 +7,7 @@ Light::Light(Engine *e, LightManifest *manifest, Entity *parent):
 {}
 
 void Light::update(float dt) {
-
+    static_cast<void>(dt);
 }
 
 bool Light::load() {
@@ -35,11 +35,11 @@ const glm::vec3 &Light::getSpecular() const {
     return static_cast<LightManifest *>(m_manifest)->specular;
 }
 
-const LightType Light::getType() const {
+LightType Light::getType() const {
     return static_cast<LightManifest *>(m_manifest)->lightType;
 }
 
-const float Light::getPower() const {
+float Light::getPower() const {
     return static_cast<LightManifest *>(m_manifest)->power;
 }
 

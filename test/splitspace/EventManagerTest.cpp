@@ -11,7 +11,7 @@ public:
     {}
 
     virtual void onEvent(splitspace::Event *ev) {
-         
+        static_cast<void>(ev);
     }
 };
 
