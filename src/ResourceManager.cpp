@@ -529,6 +529,10 @@ Resource *ResourceManager::loadResource(const std::string &name) {
     return r;
 }
 
+Material *ResourceManager::loadDefaultMaterial() {
+    return static_cast<Material *>(loadResource("__default_material__"));
+}
+
 void ResourceManager::destroy() {
     for(auto &resource : m_resourceCache) {
         unloadResource(resource.first);

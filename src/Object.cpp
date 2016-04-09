@@ -27,6 +27,8 @@ bool Object::load() {
         if(!m_material) {
             return false;
         }
+    } else {
+        m_material = m_resMan->loadDefaultMaterial();
     }
 
     if(!om->meshManifest) {

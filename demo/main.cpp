@@ -33,6 +33,7 @@ public:
                                  45.f, 1.0f, 1000.f);
 
         m_engine->renderManager->setCamera(m_camera);
+        m_engine->renderManager->setScene(m_scene);
         m_engine->eventManager->addListener(this);
         m_engine->mainLoop();
 

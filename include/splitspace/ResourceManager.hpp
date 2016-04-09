@@ -11,6 +11,7 @@ class Engine;
 class LogManager;
 
 class Resource;
+class Material;
 
 struct ResourceManifest;
 struct TextureManifest;
@@ -23,6 +24,8 @@ public:
     bool loadMaterialLib(const std::vector<std::string> &ml);
     bool loadMaterialLib(const std::string &name);
     bool loadShaderLib(const std::string &name);
+
+    Material *loadDefaultMaterial();
 
     bool loadShaderSupport(const std::string &path);
 

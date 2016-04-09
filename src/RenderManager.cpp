@@ -504,6 +504,7 @@ void RenderManager::renderScene() {
     for(auto it : renderMap) {
         if(it.first) {
             if(!setupMaterial(it.first)) {
+                m_logManager->logErr("Failed to setup material");
                 continue;
             }
         }
@@ -511,6 +512,7 @@ void RenderManager::renderScene() {
         for(auto o : it.second) {
             m_shader->setMVP(m_camera->getVP()*o->getWorldMat());
             if(!setupMesh(o->getMesh())) {
+                m_logManager->logErr("Failed to setup mesh");
                 continue;
             }
             drawCall(o->getMesh()->getNumVerts());
