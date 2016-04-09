@@ -27,7 +27,7 @@ public:
     
     Entity(Engine *e, EntityManifest *manifest, Entity *parent = nullptr);
     
-    const glm::mat4 &getWorld() const { return m_world; }
+    const glm::mat4 &getWorldMat() const { return m_world; }
     const glm::vec3 &getPos() const { return m_pos; }
     const glm::vec3 &getRot() const { return m_rot; }
     const glm::vec3 &getScale() const { return m_scale; }

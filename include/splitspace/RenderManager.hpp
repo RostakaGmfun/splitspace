@@ -115,9 +115,9 @@ private:
     void renderScene();
     void endFrame();
 
-    void setupMaterial(const Material *m);
-    void setupMesh(const Mesh *m);
-    void drawCall();
+    bool setupMaterial(const Material *m);
+    bool setupMesh(const Mesh *m);
+    void drawCall(std::size_t numVerts);
 
 private:
     WindowManager *m_winManager;

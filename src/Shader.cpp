@@ -131,24 +131,19 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
     }
 }
 
-bool Shader::setLight(int id, const Light *light) {
+void Shader::setLight(int id, const Light *light) {
     if(!light || id>m_numLights-1) {
-        return false;
+        return;
     }
     m_lights[id] = light;
-    return true;
 }
 
-bool Shader::setMaterial(const Material *mat) {
+void Shader::setMaterial(const Material *mat) {
     m_material = mat;
-    return true;
 }
 
-void Shader::updateUniformData() {
-    updateMaterialUniform();
-    updateLightUniform();
-
-    //TODO: MVP and textures
+void Shader::setMVP(const glm::mat4 &mvp) {
+    setUniform(m_genericUniforms[UNIFORM_MVP_MAT].location, mvp);
 }
 
 void Shader::updateMaterialUniform() {

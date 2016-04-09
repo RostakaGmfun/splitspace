@@ -62,12 +62,12 @@ bool Mesh::load() {
         format = VERTEX_3DTN;
     }
 
-    int numVerts = mesh->mNumVertices;
+    m_numVerts = mesh->mNumVertices;
     void *vertexData = nullptr;
     switch(format) {
         case VERTEX_3DT: {
-            Vertex3DT *verts = new Vertex3DT[numVerts];
-            for(int i = 0;i<numVerts;i++) {
+            Vertex3DT *verts = new Vertex3DT[m_numVerts];
+            for(std::size_t i = 0;i<m_numVerts;i++) {
                 verts[i].pos = glm::vec3(mesh->mVertices[i].x,
                                          mesh->mVertices[i].y,
                                          mesh->mVertices[i].z);
@@ -78,8 +78,8 @@ bool Mesh::load() {
         break;
         }
         case VERTEX_3DN: {
-            Vertex3DN *verts = new Vertex3DN[numVerts];
-            for(int i = 0;i<numVerts;i++) {
+            Vertex3DN *verts = new Vertex3DN[m_numVerts];
+            for(std::size_t i = 0;i<m_numVerts;i++) {
                 verts[i].pos = glm::vec3(mesh->mVertices[i].x,
                                          mesh->mVertices[i].y,
                                          mesh->mVertices[i].z);
@@ -91,8 +91,8 @@ bool Mesh::load() {
         break;
         }
         case VERTEX_3DTN: {
-            Vertex3DTN *verts = new Vertex3DTN[numVerts];
-            for(int i = 0;i<numVerts;i++) {
+            Vertex3DTN *verts = new Vertex3DTN[m_numVerts];
+            for(std::size_t i = 0;i<m_numVerts;i++) {
                 verts[i].pos = glm::vec3(mesh->mVertices[i].x,
                                          mesh->mVertices[i].y,
                                          mesh->mVertices[i].z);
@@ -111,7 +111,7 @@ bool Mesh::load() {
             return false;
     }
 
-    if(!m_renderMan->createMesh(vertexData, format, numVerts, m_vbo, m_vao)) {
+    if(!m_renderMan->createMesh(vertexData, format, m_numVerts, m_vbo, m_vao)) {
         m_logMan->logErr("["+path+"] Failed to create mesh");
         return false;
     }

@@ -23,6 +23,8 @@ public:
     GLuint getIBO() const { return m_ibo; }
     GLuint getVAO() const { return m_vao; }
 
+    std::size_t getNumVerts() const { return m_numVerts; }
+
 private:
     bool createPlane();
     bool createCube();
@@ -31,6 +33,8 @@ private:
     GLuint m_vbo;
     GLuint m_ibo;
     GLuint m_vao;
+
+    std::size_t m_numVerts;
 };
 
 } // namepsace splitspace

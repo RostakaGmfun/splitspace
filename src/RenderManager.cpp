@@ -7,6 +7,7 @@
 #include <splitspace/ResourceManager.hpp>
 #include <splitspace/Shader.hpp>
 #include <splitspace/Camera.hpp>
+#include <splitspace/Mesh.hpp>
 
 #include <chrono>
 
@@ -234,18 +235,33 @@ bool RenderManager::createMesh(const void *vData, VertexFormat format, int numVe
     glBindVertexArray(vaoName);
     glBindBuffer(GL_ARRAY_BUFFER, vboName);
     GLint bsize = 0;
+    //TODO: eliminate magic numbers and sync C++ and GLSL
     switch(format) {
         case VERTEX_3DT:
             glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DT),
                          vData, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3DT), (void*)offsetof(Vertex3DT, pos));
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3DT), (void*)offsetof(Vertex3DT, texcoord));
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
         break;
         case VERTEX_3DN:
             glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DN),
                          vData, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3DN), (void*)offsetof(Vertex3DN, pos));
+            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3DN), (void*)offsetof(Vertex3DN, normal));
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
         break;
         case VERTEX_3DTN:
             glBufferData(GL_ARRAY_BUFFER, numVerts*sizeof(Vertex3DTN),
                          vData, GL_STATIC_DRAW);
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3DTN), (void*)offsetof(Vertex3DTN, pos));
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex3DTN), (void*)offsetof(Vertex3DTN, texcoord));
+            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex3DTN), (void*)offsetof(Vertex3DTN, normal));
+            glEnableVertexAttribArray(0);
+            glEnableVertexAttribArray(1);
+            glEnableVertexAttribArray(2);
         break;
         default:
             m_logManager->logErr("(RenderManager) Wrong vertex format specified");
@@ -487,30 +503,41 @@ void RenderManager::renderScene() {
     auto &renderMap = m_scene->getRenderMap();
     for(auto it : renderMap) {
         if(it.first) {
-            setupMaterial(it.first);
+            if(!setupMaterial(it.first)) {
+                continue;
+            }
         }
 
         for(auto o : it.second) {
-            setupMesh(o->getMesh());
-            drawCall();
+            m_shader->setMVP(m_camera->getVP()*o->getWorldMat());
+            if(!setupMesh(o->getMesh())) {
+                continue;
+            }
+            drawCall(o->getMesh()->getNumVerts());
         }
     }
 }
 
-void RenderManager::setupMaterial(const Material *m) {
+bool RenderManager::setupMaterial(const Material *m) {
     if(!m_shader || !m) {
-        return;
+        return false;
     }
     m_shader->setMaterial(m);
     m_shader->updateMaterialUniform();
+    return true;
 }
 
-void RenderManager::setupMesh(const Mesh *m) {
+bool RenderManager::setupMesh(const Mesh *m) {
+    if(!m || !m_shader || !m_camera) {
+        return false;
+    }
 
+    glBindVertexArray(m->getVAO());
+    return true;
 }
 
-void RenderManager::drawCall() {
-
+void RenderManager::drawCall(std::size_t numVerts) {
+    glDrawArrays(GL_TRIANGLES, 0, numVerts);
 }
 
 void RenderManager::endFrame() {
@@ -518,7 +545,7 @@ void RenderManager::endFrame() {
 }
 
 void RenderManager::destroy() {
-
+    SDL_GL_DeleteContext(m_context);
 }
 
 void RenderManager::logStats() {

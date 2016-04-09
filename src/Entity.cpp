@@ -79,7 +79,7 @@ void Entity::updateTransform() {
     m_world = glm::rotate(m_world, m_rot.z, glm::vec3(0,0,1));
     m_world = glm::scale(m_world, m_scale);
     if(m_parent)
-        m_world*=m_parent->getWorld();
+        m_world*=m_parent->getWorldMat();
 }
 
 void Entity::updateChildren(float dt) {

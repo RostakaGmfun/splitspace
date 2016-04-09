@@ -21,9 +21,6 @@ enum ShaderUsage {
 
 enum UniformType {
     UNIFORM_UNKNOWN,
-    UNIFORM_VIEW_MAT,
-    UNIFORM_PROJ_MAT,
-    UNIFORM_MODEL_MAT,
     UNIFORM_MVP_MAT,
 
     UNIFORM_TEX_DIFFUSE,
@@ -59,11 +56,11 @@ public:
 
     void setNumLights(int num) { m_numLights = num; }
     int getNumLights() const { return m_numLights; }
-    bool setLight(int id, const Light *light);
-    bool setMaterial(const Material *mat);
+    void setLight(int id, const Light *light);
+    void setMaterial(const Material *mat);
 
+    void setMVP(const glm::mat4 &mvp);
 
-    void updateUniformData();
     void updateMaterialUniform();
     void updateLightUniform();
 
@@ -100,7 +97,7 @@ private:
 
     struct GenericUniform {
         std::string name;
-        GLint locations;
+        GLint location;
     };
     std::map<UniformType, GenericUniform> m_genericUniforms;
 };
