@@ -11,6 +11,9 @@
 
 namespace splitspace {
 
+class Light;
+class Material;
+
 enum ShaderUsage {
     SHADER_USAGE_OBJECT,
     SHADER_USAGE_RTV
@@ -54,17 +57,50 @@ public:
     virtual bool load();
     virtual void unload();
 
+    void setNumLights(int num) { m_numLights = num; }
+    int getNumLights() const { return m_numLights; }
+    bool setLight(int id, const Light *light);
+    bool setMaterial(const Material *mat);
+
+
+    void updateUniformData();
+
 private:
     void initUniforms(const std::map<std::string, UniformType> &mapping);
+    void setUniform(GLint id, float val);
+    void setUniform(GLint id, int val);
+    void setUniform(GLint id, glm::vec3 val);
+    void setUniform(GLint id, glm::vec4 val);
+    void setUniform(GLint id, glm::mat4 val);
 
+
+    void updateMaterialUniform();
+    void updateLightUniform();
 private:
     GLuint m_programId;
-    struct Uniform {
-        GLuint id;
-        UniformType type;
+
+    struct LightUniform {
+        std::string name;
+        std::vector<std::map<std::string, GLint>> locations;
     };
 
-    std::map<std::string, Uniform> m_uniforms;
+    LightUniform m_lightUniform;
+    int m_numLights;
+    std::map<int, const Light *> m_lights;
+
+    struct MaterialUniform {
+        std::string name;
+        std::map<std::string, GLint> locations;
+    };
+
+    MaterialUniform m_materialUniform;
+    const Material *m_material;
+
+    struct GenericUniform {
+        std::string name;
+        GLint locations;
+    };
+    std::map<UniformType, GenericUniform> m_genericUniforms;
 };
 
 }

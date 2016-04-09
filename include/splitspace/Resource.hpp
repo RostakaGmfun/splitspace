@@ -42,6 +42,9 @@ public:
     int getRefCount() const;
 
     ResourceType getType() const { return m_manifest?m_manifest->type:RES_UNKNOWN; }
+    std::string getName() const { return m_manifest?m_manifest->name:""; }
+
+    ResourceManifest *getManifest() const { return m_manifest; }
 
 protected:
     int m_refCount;

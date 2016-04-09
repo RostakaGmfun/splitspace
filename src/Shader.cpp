@@ -1,6 +1,10 @@
 #include <splitspace/Shader.hpp>
 #include <splitspace/LogManager.hpp>
 #include <splitspace/ResourceManager.hpp>
+#include <splitspace/Light.hpp>
+#include <splitspace/Material.hpp>
+
+#include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
 
@@ -8,7 +12,9 @@ namespace splitspace {
 
 Shader::Shader(Engine *e, ShaderManifest *manifest):
                                           Resource(e, manifest),
-                                          m_programId(0)
+                                          m_programId(0),
+                                          m_numLights(0),
+                                          m_material(nullptr)
 {}
 
 bool Shader::load() {
@@ -98,28 +104,113 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
     for(const auto &u : mapping) {
         switch(u.second) {
             case UNIFORM_MATERIAL_STRUCT: {
+                m_materialUniform.name = u.first;
                 for(const auto &prop : matProps) {
                     std::string name = u.first+"."+prop;
-                    m_uniforms[name] = Uniform{m_renderMan->getUniformId(m_programId, name.c_str()), u.second};
+                    m_materialUniform.locations[prop] = glGetUniformLocation(m_programId, name.c_str());
                 }
                 break;
             }
             case UNIFORM_LIGHT_STRUCT: {
-                //TODO unify MAX_LIGHTS in GLSL and C++
+                m_lightUniform.name = u.first;
+                //TODO Eliminate magic numbers and unify MAX_LIGHTS in GLSL and C++
+                m_lightUniform.locations.reserve(8);
                 for(int i = 0;i<8;i++) {
                     for(const auto &prop : lightProps) {
                         std::string name = u.first+"["+std::to_string(i)+"]."+prop;
-                        m_uniforms[name] = Uniform{m_renderMan->getUniformId(m_programId, name.c_str()), u.second};
+                        m_lightUniform.locations[i][prop] = glGetUniformLocation(m_programId, name.c_str());
                     }
                 }
                 break;
             }
             default:
-                m_uniforms[u.first] = Uniform{m_renderMan->getUniformId(m_programId, u.first.c_str()),u.second};
+                m_genericUniforms[u.second] = GenericUniform{u.first,
+                                              glGetUniformLocation(m_programId, u.first.c_str())};
                 break;
         }
     }
 }
+
+bool Shader::setLight(int id, const Light *light) {
+    if(!light || id>m_numLights-1) {
+        return false;
+    }
+    m_lights[id] = light;
+    return true;
+}
+
+bool Shader::setMaterial(const Material *mat) {
+    m_material = mat;
+    return true;
+}
+
+void Shader::updateUniformData() {
+    updateMaterialUniform();
+    updateLightUniform();
+
+    //TODO: MVP and textures
+}
+
+void Shader::updateMaterialUniform() {
+    if(!m_material || m_materialUniform.name.empty()) {
+        return;
+    }
+    MaterialManifest *mm = static_cast<MaterialManifest *>(m_material->getManifest());
+    if(!mm) {
+        return;
+    }
+    setUniform(m_materialUniform.locations["ambient"], mm->ambient);
+    setUniform(m_materialUniform.locations["diffuse"], mm->diffuse);
+    setUniform(m_materialUniform.locations["specular"], mm->specular);
+    setUniform(m_materialUniform.locations["isTextured"], mm->diffuseMap == nullptr);
+    //TODO:
+    setUniform(m_materialUniform.locations["technique"], 1);
+}
+
+void Shader::updateLightUniform() {
+    if(m_numLights<=0) {
+        return;
+    }
+    int i = 0;
+    for(auto &light : m_lightUniform.locations) {
+        LightManifest *lm = static_cast<LightManifest *>(m_lights[i]->getManifest());
+        if(!lm) {
+            continue;
+        }
+        setUniform(light["position"], lm->pos);
+        setUniform(light["rotation"], lm->rot);
+        setUniform(light["diffuse"], lm->diffuse);
+        setUniform(light["specular"], lm->specular);
+        if(lm->lightType == LIGHT_SPOT) {
+            setUniform(light["spotLightCutoff"], lm->spotLightCutoff);
+        }
+        setUniform(light["power"], lm->power);
+        setUniform(light["type"], (int)lm->lightType);
+
+        i++;
+    }
+}
+
+void Shader::setUniform(GLint id, float val) {
+    glUniform1f(id, val);
+}
+
+void Shader::setUniform(GLint id, int val) {
+    glUniform1i(id, val);
+}
+
+void Shader::setUniform(GLint id, glm::vec3 val) {
+    glUniform3f(id, val.x, val.y, val.z);
+}
+
+void Shader::setUniform(GLint id, glm::vec4 val) {
+    glUniform4f(id, val.x, val.y, val.z, val.w);
+}
+
+void Shader::setUniform(GLint id, glm::mat4 val) {
+    glUniformMatrix4fv(id, 1, GL_FALSE, (const GLfloat*)glm::value_ptr(val));
+}
+
 
 void Shader::unload() {
     m_logMan->logInfo("(Shader) Unloading "+m_manifest->name);
