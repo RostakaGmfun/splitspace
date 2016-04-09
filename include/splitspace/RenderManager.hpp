@@ -17,6 +17,7 @@ class LogManager;
 class ResourceManager;
 class SceneManager;
 class Scene;
+class Camera;
 
 class Texture;
 class Shader;
@@ -82,6 +83,7 @@ public:
     void destroy();
 
     void setScene(Scene *scn) { m_scene = scn; }
+    void setCamera(Camera *cam) { m_camera = cam; }
 
     bool createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName);
     bool createSampler(bool useMipmaps, TextureFiltering filtering, GLuint &smaplerName);
@@ -135,6 +137,7 @@ private:
 
     Scene *m_scene;
     Shader *m_shader;
+    Camera *m_camera;
 };
 
 } // namespace splitspace

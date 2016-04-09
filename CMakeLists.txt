@@ -35,6 +35,7 @@ set(ENGINE_SRC
     src/Mesh.cpp
     src/Light.cpp
     src/Shader.cpp
+    src/Camera.cpp
     )
 
 set(DEMO_SRC

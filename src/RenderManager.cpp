@@ -6,6 +6,7 @@
 #include <splitspace/Object.hpp>
 #include <splitspace/ResourceManager.hpp>
 #include <splitspace/Shader.hpp>
+#include <splitspace/Camera.hpp>
 
 #include <chrono>
 
@@ -24,7 +25,8 @@ RenderManager::RenderManager(Engine *e): m_winManager(e->windowManager),
                                          m_averageFrameTime(0),
                                          m_memoryUsed(0),
                                          m_scene(nullptr),
-                                         m_shader(nullptr)
+                                         m_shader(nullptr),
+                                         m_camera(nullptr)
 
 {}
 
@@ -91,6 +93,8 @@ bool RenderManager::init(bool vsync) {
                              m_resManager->getDefaultShader());
         return false;
     }
+
+    glUseProgram(m_shader->getProgramId());
 
     return true;
 }
@@ -476,9 +480,10 @@ void RenderManager::beginFrame() {
 }
 
 void RenderManager::renderScene() {
-    if(!m_scene)
+    if(!m_scene || !m_shader) {
         return;
-    
+    }
+
     auto &renderMap = m_scene->getRenderMap();
     for(auto it : renderMap) {
         if(it.first) {
@@ -493,7 +498,11 @@ void RenderManager::renderScene() {
 }
 
 void RenderManager::setupMaterial(const Material *m) {
-
+    if(!m_shader || !m) {
+        return;
+    }
+    m_shader->setMaterial(m);
+    m_shader->updateMaterialUniform();
 }
 
 void RenderManager::setupMesh(const Mesh *m) {

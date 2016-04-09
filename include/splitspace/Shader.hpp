@@ -64,6 +64,10 @@ public:
 
 
     void updateUniformData();
+    void updateMaterialUniform();
+    void updateLightUniform();
+
+    GLuint getProgramId() const { return m_programId; }
 
 private:
     void initUniforms(const std::map<std::string, UniformType> &mapping);
@@ -74,8 +78,6 @@ private:
     void setUniform(GLint id, glm::mat4 val);
 
 
-    void updateMaterialUniform();
-    void updateLightUniform();
 private:
     GLuint m_programId;
 

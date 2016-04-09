@@ -22,8 +22,6 @@ class Object: public Entity {
 public:
     Object(Engine *e, ObjectManifest *manifest, Entity *parent = nullptr);
 
-    virtual void update(float dt);
-
     virtual bool load();
     virtual void unload();
 

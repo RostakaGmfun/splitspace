@@ -33,7 +33,7 @@ public:
     virtual bool load();
     virtual void unload();
 
-    const Entity *getRootNode() const { return m_rootNode; }
+    Entity *getRootNode() const { return m_rootNode; }
 
     const RenderMap &getRenderMap() const { return m_renderMap; }
 

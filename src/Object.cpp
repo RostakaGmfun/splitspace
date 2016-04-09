@@ -42,10 +42,6 @@ bool Object::load() {
     return true;    
 }
 
-void Object::update(float dt) {
-
-}
-
 void Object::unload() {
     m_logMan->logInfo("(Object) Unloading "+m_manifest->name);
     m_isLoaded = false;
