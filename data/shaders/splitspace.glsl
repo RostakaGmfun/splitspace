@@ -21,11 +21,11 @@ struct Material {
 #define RENDER_LAMBERT 1
 #define RENDER_PHONG   2
 
-vec4 applyMaterial(Material material, sampler2D diffuse, vec2 uv) {
-    if(!material.isTextured) {
-        return material.diffuse;
+vec4 applyMaterial(Material material, sampler2D diffuseMap, vec2 uv) {
+    if(material.isTextured) {
+        return texture(diffuseMap, uv);
     } else {
-        return texture(diffuse, uv);
+        return material.diffuse;
     }
 }
 

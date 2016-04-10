@@ -17,7 +17,7 @@
 
 using json = nlohmann::json;
 
-static bool readVec2(glm::vec2 &vec, json &array) {
+static bool readVec(glm::vec2 &vec, json &array) {
     if(array.size() == 2) {
         vec = glm::vec2(float(array[0]), float(array[1]));
         return true;
@@ -25,9 +25,17 @@ static bool readVec2(glm::vec2 &vec, json &array) {
     return false;
 }
 
-static bool readVec3(glm::vec3 &vec, json &array) {
+static bool readVec(glm::vec3 &vec, json &array) {
     if(array.size() == 3) {
         vec = glm::vec3(float(array[0]), float(array[1]), float(array[2])); 
+        return true;
+    }
+    return false;
+}
+
+static bool readVec(glm::vec4 &vec, json &array) {
+    if(array.size() == 4) {
+        vec = glm::vec4(float(array[0]), float(array[1]), float(array[2]), float(array[3]));
         return true;
     }
     return false;
@@ -109,15 +117,15 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
                 continue;
             }
             mm->name = (*it)["name"];
-            if(!readVec3(mm->ambient, (*it)["ambient"])) {
+            if(!readVec(mm->ambient, (*it)["ambient"])) {
                 m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": ambient should contain 3 elements");
             }
 
-            if(!readVec3(mm->diffuse, (*it)["diffuse"])) {
+            if(!readVec(mm->diffuse, (*it)["diffuse"])) {
                 m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": diffuse should contain 3 elements");
             }
 
-            if(!readVec3(mm->specular, (*it)["specular"])) {
+            if(!readVec(mm->specular, (*it)["specular"])) {
                 m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": specular should contain 3 elements");
             }
 
@@ -150,7 +158,7 @@ bool ResourceManager::loadMaterialLib(const std::string &name) {
                     mm->repeatX = mm->repeatY = 1;
                 } else {
                     glm::vec2 vv;
-                    if(!readVec2(vv, jr)) {
+                    if(!readVec(vv, jr)) {
                         m_logMan->logWarn("(ResourceManager) at "+path+" in "+mm->name+": mapping.repeat should contain 2 elements");
                     }
                     mm->repeatX = vv.x;
@@ -340,15 +348,15 @@ bool ResourceManager::createScene(const std::string &name) {
             if(jo["transform"].is_null()) {
                 objMan->scale = glm::vec3(1);
             } else {
-                if(!readVec3(objMan->pos, jo["transform"]["position"])) {
+                if(!readVec(objMan->pos, jo["transform"]["position"])) {
                     m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.position should contain 3 elements");
                 }
 
-                if(!readVec3(objMan->rot, jo["transform"]["rotation"])) {
+                if(!readVec(objMan->rot, jo["transform"]["rotation"])) {
                     m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.rotation should contain 3 elements");
                 }
 
-                if(!readVec3(objMan->scale, jo["transform"]["scaling"])) {
+                if(!readVec(objMan->scale, jo["transform"]["scaling"])) {
                     m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.scaling should contain 3 elements");
                 }
             }
@@ -398,11 +406,11 @@ bool ResourceManager::createScene(const std::string &name) {
             lightMan->lightType = Light::getTypeFromName(lightType);
             auto jtransform = jo["transform"];
             if(!jtransform.is_null()) {
-                readVec3(lightMan->pos, jtransform["position"]);
-                readVec3(lightMan->rot, jtransform["rotation"]);
+                readVec(lightMan->pos, jtransform["position"]);
+                readVec(lightMan->rot, jtransform["rotation"]);
             }
-            readVec3(lightMan->diffuse, jo["diffuse"]);
-            readVec3(lightMan->specular, jo["specular"]);
+            readVec(lightMan->diffuse, jo["diffuse"]);
+            readVec(lightMan->specular, jo["specular"]);
             lightMan->power = jo["power"].is_null()?1.f:float(jo["power"]);
         } catch(std::domain_error e) {
             m_logMan->logErr("(ResourceManager) \""+lightName+"\":");

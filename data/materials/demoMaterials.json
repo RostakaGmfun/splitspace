@@ -2,7 +2,7 @@
     {
         "name": "__default_material__",
         "ambient":  [1, 1, 1],
-        "diffuse":  [1, 0.4, 0.6],
+        "diffuse":  [1, 0.4, 0.6, 1.0],
         "specular": [1, 1, 1]
     },
 

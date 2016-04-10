@@ -163,7 +163,7 @@ void Shader::updateMaterialUniform() {
     setUniform(m_materialUniform.locations["ambient"], mm->ambient);
     setUniform(m_materialUniform.locations["diffuse"], mm->diffuse);
     setUniform(m_materialUniform.locations["specular"], mm->specular);
-    setUniform(m_materialUniform.locations["isTextured"], mm->diffuseMap == nullptr);
+    setUniform(m_materialUniform.locations["isTextured"], mm->diffuseMap != nullptr);
     //TODO:
     setUniform(m_materialUniform.locations["technique"], 1);
 }
