@@ -8,14 +8,15 @@ namespace splitspace {
 
 Camera::Camera(float w, float h, float fov, float near, float far):
                m_width(w), m_height(h), m_fov(fov), m_near(near), m_far(far)
-{}
+{
+    m_projMat = glm::perspective(m_fov, m_width/m_height, m_near, m_far);
+}
 
 FPSCamera::FPSCamera(float w, float h, float fov, float near, float far):
                      Camera(w, h, fov, near, far), m_speed(0), m_moveVertically(false)
 {}
 
 bool FPSCamera::init() {
-    m_projMat = glm::perspective(m_fov, m_width/m_height, m_near, m_far);
     return true;
 }
 
@@ -34,6 +35,24 @@ void FPSCamera::update(float dt) {
 void FPSCamera::destroy() {
 
 }
+
+LookatCamera::LookatCamera(float w, float h, float fov, float near, float far):
+                                Camera(w, h, fov, near, far)
+{}
+
+bool LookatCamera::init() {
+    return true;
+}
+
+void LookatCamera::update(float dt) {
+    static_cast<void>(dt);
+    m_viewProj = m_projMat*glm::lookAt(m_position, m_lookPos, glm::vec3(0, 1, 0));
+}
+
+void LookatCamera::destroy() {
+
+}
+
 
 } // namespace splitspace
 

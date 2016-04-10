@@ -23,6 +23,7 @@ public:
 
 protected:
     glm::mat4 m_viewProj;
+    glm::mat4 m_projMat;
     glm::vec3 m_position;
     glm::vec3 m_rotation;
 
@@ -49,8 +50,23 @@ public:
 
 private:
     float m_speed;
-    glm::mat4 m_projMat;
     bool m_moveVertically;
+};
+
+class LookatCamera: public Camera {
+public:
+    LookatCamera(float w, float h, float fov, float near, float far);
+
+    ~LookatCamera() { destroy(); }
+
+    bool init();
+    void update(float dt);
+    void destroy();
+
+    void setLookPosition(const glm::vec3 &lookPos) { m_lookPos = lookPos; }
+
+private:
+    glm::vec3 m_lookPos;
 };
 
 } //namepsace splitspace

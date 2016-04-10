@@ -199,15 +199,6 @@ bool ResourceManager::loadShaderSupport(const std::string &path) {
 
     return true;
 }
-
-bool ResourceManager::createSceneManifests(const std::vector<std::string> &scenes) {
-    for(auto it = scenes.begin();it!=scenes.end();it++) {
-        if(!createScene(*it))
-            return false;
-    }
-    return true;
-}
-
 bool ResourceManager::loadShaderLib(const std::string &name) {
     std::string path = m_resPath+"shaders/"+name+".json";
     std::ifstream f(path);
@@ -260,6 +251,15 @@ bool ResourceManager::loadShaderLib(const std::string &name) {
 
     return true;
 }
+
+bool ResourceManager::createSceneManifests(const std::vector<std::string> &scenes) {
+    for(auto it = scenes.begin();it!=scenes.end();it++) {
+        if(!createScene(*it))
+            return false;
+    }
+    return true;
+}
+
 
 bool ResourceManager::createScene(const std::string &name) {
     SceneManifest *sceneMan = nullptr;
@@ -353,6 +353,7 @@ bool ResourceManager::createScene(const std::string &name) {
                 }
             }
             if(!jo["parent"].is_null()) {
+                m_logMan->logWarn("(ResourceManager) parent objects currently are not supported");
                 objMan->parent = jo["parent"];
             }
         } catch(std::domain_error e) {

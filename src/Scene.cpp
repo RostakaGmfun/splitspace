@@ -6,6 +6,7 @@
 #include <splitspace/ResourceManager.hpp>
 
 #include <algorithm>
+#include <functional>
 
 namespace splitspace {
 
@@ -45,37 +46,37 @@ bool Scene::load() {
 
     SceneManifest *sm = static_cast<SceneManifest *>(m_manifest);
 
-    for(auto it = sm->objects.begin();it!=sm->objects.end();it++) {
-        Object *o = static_cast<Object *>(m_resMan->loadResource((*it)->name));
+    for(auto &it : sm->objects) {
+        Object *o = static_cast<Object *>(m_resMan->loadResource(it->name));
         if(!o) {
             continue;
         }
-        if((*it)->name.empty()) {
-            m_rootNode->addChild(o);
-        } else {
-            Entity *e = static_cast<Object *>(m_resMan->loadResource((*it)->name));
-            if(e) {
-                e->addChild(o);
-            } else {
-                m_rootNode->addChild(o);
-            }
-        }
-
-        auto objListItr = m_renderMap.find(o->getMaterial());
-        if(objListItr == m_renderMap.end()) {
-            m_renderMap[o->getMaterial()].push_back(o);
-        } else {
-            auto &objL = m_renderMap[o->getMaterial()];
-            auto objItr = std::find(objL.begin(), objL.end(), o);
-            if(objItr == objL.end()) {
-                objL.push_back(o);
-            }
-        }
-        
+        m_rootNode->addChild(o);
     }
+
+    updateRenderMap();
 
     m_isLoaded = true;
     return true;
+}
+
+void Scene::updateRenderMap() {
+    std::function<void (RenderMap&, Entity*)> addObjectRecursive = [&](RenderMap &rm, Entity *e) {
+        if(!e) {
+            return;
+        }
+        if(e->getType() == RES_OBJECT) {
+            Object *o = static_cast<Object *>(e);
+            rm[o->getMaterial()].push_back(o);
+        }
+
+        for(auto &it : e->getChildren()) {
+            addObjectRecursive(rm, it);
+        }
+    };
+
+    m_renderMap.clear();
+    addObjectRecursive(m_renderMap, m_rootNode);
 }
 
 void Scene::unload() {

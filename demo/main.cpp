@@ -8,6 +8,7 @@
 #include <splitspace/Entity.hpp>
 
 #include <iostream>
+#include <algorithm>
 
 using namespace splitspace;
 
@@ -28,10 +29,20 @@ public:
             return 1;
         }
 
-        m_camera = new FPSCamera(m_engine->config->window.width,
+        m_camera = new LookatCamera(m_engine->config->window.width,
                                  m_engine->config->window.height,
                                  45.f, 1.0f, 1000.f);
+        m_camera->setPosition(glm::vec3(0, 0, -20));
+        const auto &objects = m_scene->getRootNode()->getChildren();
+        const auto &suzanne = std::find_if(objects.begin(), objects.end(),
+                              [](Entity *e) {
+                                return e->getName() == "Suzanne1";
+                              });
 
+        if(suzanne == objects.end()) {
+            return 1;
+        }
+        m_camera->setLookPosition((*suzanne)->getPos());
         m_engine->renderManager->setCamera(m_camera);
         m_engine->renderManager->setScene(m_scene);
         m_engine->eventManager->addListener(this);
@@ -80,7 +91,7 @@ private:
 private:
     Engine *m_engine;
     Scene *m_scene;
-    Camera *m_camera;
+    LookatCamera *m_camera;
 };
 
 int main() {

@@ -38,6 +38,9 @@ public:
     const RenderMap &getRenderMap() const { return m_renderMap; }
 
 private:
+    void updateRenderMap();
+
+private:
     Entity *m_rootNode;
     ResourceManager *m_resManager;
     Engine *m_engine;
