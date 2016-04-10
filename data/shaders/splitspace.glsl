@@ -22,7 +22,7 @@ struct Material {
 #define RENDER_PHONG   2
 
 vec4 applyMaterial(Material material, sampler2D diffuse, vec2 uv) {
-    if(material.isTextured) {
+    if(!material.isTextured) {
         return material.diffuse;
     } else {
         return texture(diffuse, uv);

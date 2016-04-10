@@ -12,6 +12,6 @@ void main() {
     Normal = inNormal;
     Texcoord = inTexcoord;
     Position = inPosition;
-    gl_Position = MVP * vec4(inPosition, 0.0);
+    gl_Position = MVP * vec4(inPosition, 1.0);
 }
 

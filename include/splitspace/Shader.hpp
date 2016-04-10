@@ -70,9 +70,9 @@ private:
     void initUniforms(const std::map<std::string, UniformType> &mapping);
     void setUniform(GLint id, float val);
     void setUniform(GLint id, int val);
-    void setUniform(GLint id, glm::vec3 val);
-    void setUniform(GLint id, glm::vec4 val);
-    void setUniform(GLint id, glm::mat4 val);
+    void setUniform(GLint id, const glm::vec3 &val);
+    void setUniform(GLint id, const glm::vec4 &val);
+    void setUniform(GLint id, const glm::mat4 &val);
 
 
 private:

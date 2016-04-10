@@ -349,7 +349,7 @@ bool ResourceManager::createScene(const std::string &name) {
                 }
 
                 if(!readVec3(objMan->scale, jo["transform"]["scaling"])) {
-                    m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.rotation should contain 3 elements");
+                    m_logMan->logWarn("(ResourceManager) at "+path+" in "+objMan->name+": transform.scaling should contain 3 elements");
                 }
             }
             if(!jo["parent"].is_null()) {

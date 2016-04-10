@@ -14,7 +14,7 @@ using namespace splitspace;
 
 class Demo: public EventListener {
 public:
-    Demo(): EventListener(EVM_WINDOW|EVM_INPUT, "MyListener"),
+    Demo(): EventListener(EVM_WINDOW|EVM_INPUT|EVM_GAME, "MyListener"),
                   m_engine(nullptr), m_scene(nullptr)
     {}
 
@@ -32,7 +32,7 @@ public:
         m_camera = new LookatCamera(m_engine->config->window.width,
                                  m_engine->config->window.height,
                                  45.f, 1.0f, 1000.f);
-        m_camera->setPosition(glm::vec3(0, 0, -20));
+        m_camera->setPosition(glm::vec3(0, 0, 10));
         const auto &objects = m_scene->getRootNode()->getChildren();
         const auto &suzanne = std::find_if(objects.begin(), objects.end(),
                               [](Entity *e) {
@@ -82,10 +82,7 @@ private:
 
     void handleUpdate(const UpdateEvent *uev) {
         m_camera->update(uev->delta);
-        Entity *root = m_scene->getRootNode();
-        if(root) {
-            root->update(uev->delta);
-        }
+        m_scene->update(uev->delta);
     }
 
 private:

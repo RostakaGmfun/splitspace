@@ -83,5 +83,9 @@ void Scene::unload() {
     m_isLoaded = false;
 }
 
+void Scene::update(float dt) {
+    m_rootNode->update(dt);
+}
+
 } // namespace splitspace
 

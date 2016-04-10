@@ -1,6 +1,7 @@
 #include <splitspace/Entity.hpp>
-#include <algorithm>
+#include <splitspace/LogManager.hpp>
 
+#include <algorithm>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace splitspace {

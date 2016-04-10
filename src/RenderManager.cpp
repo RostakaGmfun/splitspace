@@ -500,7 +500,8 @@ void RenderManager::renderScene() {
         return;
     }
 
-    auto &renderMap = m_scene->getRenderMap();
+    const auto &renderMap = m_scene->getRenderMap();
+    glUseProgram(m_shader->getProgramId());
     for(auto it : renderMap) {
         if(it.first) {
             if(!setupMaterial(it.first)) {
@@ -510,7 +511,7 @@ void RenderManager::renderScene() {
         }
 
         for(auto o : it.second) {
-            m_shader->setMVP(m_camera->getVP()*o->getWorldMat());
+            m_shader->setMVP(m_camera->getVP());
             if(!setupMesh(o->getMesh())) {
                 m_logManager->logErr("Failed to setup mesh");
                 continue;

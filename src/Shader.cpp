@@ -77,6 +77,12 @@ UniformType Shader::getUniformTypeFromString(const std::string &u) {
         return UNIFORM_MVP_MAT;
     } else if(u == "_TEX_DIFFUSE_") {
         return UNIFORM_TEX_DIFFUSE;
+    } else if(u == "_LIGHT_STRUCT_") {
+        return UNIFORM_LIGHT_STRUCT;
+    } else if(u == "_MATERIAL_STRUCT_") {
+        return UNIFORM_MATERIAL_STRUCT;
+    } else if(u == "_NUM_LIGHTS_") {
+        return UNIFORM_NUM_LIGHTS;
     } else {
         return UNIFORM_UNKNOWN;
     }
@@ -100,7 +106,6 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
         "power",
         "type"
     };
-
     for(const auto &u : mapping) {
         switch(u.second) {
             case UNIFORM_MATERIAL_STRUCT: {
@@ -114,12 +119,13 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
             case UNIFORM_LIGHT_STRUCT: {
                 m_lightUniform.name = u.first;
                 //TODO Eliminate magic numbers and unify MAX_LIGHTS in GLSL and C++
-                m_lightUniform.locations.reserve(8);
                 for(int i = 0;i<8;i++) {
+                    std::map<std::string, GLint> mp;
                     for(const auto &prop : lightProps) {
                         std::string name = u.first+"["+std::to_string(i)+"]."+prop;
-                        m_lightUniform.locations[i][prop] = glGetUniformLocation(m_programId, name.c_str());
+                        mp[prop] = glGetUniformLocation(m_programId, name.c_str());
                     }
+                    m_lightUniform.locations.push_back(mp);
                 }
                 break;
             }
@@ -187,23 +193,33 @@ void Shader::updateLightUniform() {
 }
 
 void Shader::setUniform(GLint id, float val) {
-    glUniform1f(id, val);
+    if(id>=0) {
+        glUniform1f(id, val);
+    }
 }
 
 void Shader::setUniform(GLint id, int val) {
-    glUniform1i(id, val);
+    if(id>=0) {
+        glUniform1i(id, val);
+    }
 }
 
-void Shader::setUniform(GLint id, glm::vec3 val) {
-    glUniform3f(id, val.x, val.y, val.z);
+void Shader::setUniform(GLint id, const glm::vec3 &val) {
+    if(id>=0) {
+        glUniform3f(id, val.x, val.y, val.z);
+    }
 }
 
-void Shader::setUniform(GLint id, glm::vec4 val) {
-    glUniform4f(id, val.x, val.y, val.z, val.w);
+void Shader::setUniform(GLint id, const glm::vec4 &val) {
+    if(id>=0) {
+        glUniform4f(id, val.x, val.y, val.z, val.w);
+    }
 }
 
-void Shader::setUniform(GLint id, glm::mat4 val) {
-    glUniformMatrix4fv(id, 1, GL_FALSE, (const GLfloat*)glm::value_ptr(val));
+void Shader::setUniform(GLint id, const glm::mat4 &val) {
+    if(id>=0) {
+        glUniformMatrix4fv(id, 1, GL_FALSE, (const GLfloat*)glm::value_ptr(val));
+    }
 }
 
 

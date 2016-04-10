@@ -75,6 +75,7 @@ bool Mesh::load() {
                                               mesh->mTextureCoords[0][i].y);
             }
             vertexData = verts;
+        m_logMan->logInfo("("+m_manifest->name+") Vertex layout is VERTEX_3DT");
         break;
         }
         case VERTEX_3DN: {
@@ -88,6 +89,7 @@ bool Mesh::load() {
                                             mesh->mVertices[i].z);
             }
             vertexData = verts;
+            m_logMan->logInfo("("+m_manifest->name+") Vertex layout is VERTEX_3DN");
         break;
         }
         case VERTEX_3DTN: {
@@ -104,6 +106,7 @@ bool Mesh::load() {
                                             mesh->mVertices[i].z);
             }
             vertexData = verts;
+            m_logMan->logInfo("("+m_manifest->name+") Vertex layout is VERTEX_3DTN");
         break;
         }
         default:

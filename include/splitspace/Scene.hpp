@@ -33,6 +33,8 @@ public:
     virtual bool load();
     virtual void unload();
 
+    void update(float dt);
+
     Entity *getRootNode() const { return m_rootNode; }
 
     const RenderMap &getRenderMap() const { return m_renderMap; }
