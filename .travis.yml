@@ -14,8 +14,8 @@ before_install:
     - sudo apt-get update -qq
 
 install:
-    - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+    - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
     - sudo apt-get install libsdl2 libsdl2-dev
     - ./third_party/install-json.sh
     - ./third_party/install-catch.sh
