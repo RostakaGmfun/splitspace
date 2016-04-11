@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 
 set(ENGINE splitspace)
-set(DEMO splitspace-demo)
 
 project(${ENGINE})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -Wextra")
+set(CMAKE_CXX_STANDARD 11)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
 
 find_library(gl_lib GL)
 find_library(sdl2_lib SDL2)
@@ -13,9 +14,14 @@ find_library(assimp_lib assimp)
 find_library(SOIL_lib SOIL)
 find_library(GLEW_lib GLEW)
 
-set(LIBS GL GLEW SDL2 assimp SOIL)
+get_directory_property(hasParent PARENT_DIRECTORY)
+if(hasParent)
+    set(SPLITSPACE_LIBS GL GLEW SDL2 assimp SOIL PARENT_SCOPE)
+else()
+    set(SPLITSPACE_LIBS GL GLEW SDL2 assimp SOIL)
+endif()
 
-message("LIBS: ${LIBS}")
+message("SPLITSPACE_LIBS: ${SPLITSPACE_LIBS}")
 
 set(ENGINE_SRC 
     src/Engine.cpp
@@ -42,13 +48,10 @@ set(DEMO_SRC
     demo/main.cpp
     )
 
-link_directories(${CMAKE_SOURCE_DIR}/lib)
 include_directories(include ${CMAKE_SOURCE_DIR})
 
 add_library(${ENGINE} STATIC ${ENGINE_SRC})
-add_executable(${DEMO} ${DEMO_SRC})
 
-target_link_libraries(${DEMO} ${ENGINE} ${LIBS})
 if(${RUN_TESTS})
     add_subdirectory(test)
 endif()

@@ -14,8 +14,10 @@ set(TEST_SRC
     splitspace/ResourceManagerTest.cpp
     )
 
-add_executable( ${PNAME} ${TEST_SRC} )
-target_link_libraries (${PNAME} ${CMAKE_SOURCE_DIR}/build/libsplitspace.a ${LIBS})
+link_directories(${CMAKE_SOURCE_DIR}/build/ ${CMAKE_SOURCE_DIR}/lib/)
+
+add_executable(${PNAME} ${TEST_SRC})
+target_link_libraries (${PNAME} splitspace ${SPLITSPACE_LIBS})
 
 include_directories(${CMAKE_SOURCE_DIR}/include/ )
 
