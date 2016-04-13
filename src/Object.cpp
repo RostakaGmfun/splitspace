@@ -16,6 +16,10 @@ bool Object::load() {
         return false;
     }
 
+    if(!Entity::load()) {
+        return false;
+    }
+
     if(m_manifest->name.empty()) {
         m_logMan->logErr("(Object) Emtpy Object names not supported");
         return false;

@@ -16,7 +16,13 @@ Entity::Entity(Engine *e, EntityManifest *manifest,Entity *parent):
 }
 
 bool Entity::load() {
-    m_isLoaded = true;
+    EntityManifest *em = static_cast<EntityManifest *>(m_manifest);
+    m_pos = em->pos;
+    m_rot = em->rot;
+    m_scale = em->scale;
+    if(m_manifest->type == RES_ENTITY) {
+        m_isLoaded = true;
+    }
     return true;
 }
 
@@ -74,13 +80,15 @@ void Entity::update(float dt) {
 }
 
 void Entity::updateTransform() {
-    m_world = glm::translate(glm::mat4(1), m_pos);
+    m_world = glm::mat4(1);
+    if(m_parent) {
+        m_world*=m_parent->getWorldMat();
+    }
+    m_world = glm::translate(m_world, m_pos);
     m_world = glm::rotate(m_world, m_rot.y, glm::vec3(0,1,0));
     m_world = glm::rotate(m_world, m_rot.x, glm::vec3(1,0,0));
     m_world = glm::rotate(m_world, m_rot.z, glm::vec3(0,0,1));
     m_world = glm::scale(m_world, m_scale);
-    if(m_parent)
-        m_world*=m_parent->getWorldMat();
 }
 
 void Entity::updateChildren(float dt) {

@@ -53,7 +53,7 @@ bool Engine::init() {
 
 void Engine::mainLoop() {
     using namespace std::chrono;
-    Event *e = new UpdateEvent(0);
+    Event *e = new UpdateEvent(1);
     milliseconds cur, last = duration_cast<milliseconds>(
                         system_clock::now().time_since_epoch());
     while(!m_quit) {

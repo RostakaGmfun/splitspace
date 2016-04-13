@@ -511,7 +511,7 @@ void RenderManager::renderScene() {
         }
 
         for(auto o : it.second) {
-            m_shader->setMVP(m_camera->getVP());
+            m_shader->setMVP(m_camera->getVP()*o->getWorldMat());
             if(!setupMesh(o->getMesh())) {
                 m_logManager->logErr("Failed to setup mesh");
                 continue;
