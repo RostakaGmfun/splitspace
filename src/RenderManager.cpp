@@ -8,6 +8,7 @@
 #include <splitspace/Shader.hpp>
 #include <splitspace/Camera.hpp>
 #include <splitspace/Mesh.hpp>
+#include <splitspace/RenderTechnique.hpp>
 
 #include <chrono>
 
@@ -27,7 +28,8 @@ RenderManager::RenderManager(Engine *e): m_winManager(e->windowManager),
                                          m_memoryUsed(0),
                                          m_scene(nullptr),
                                          m_shader(nullptr),
-                                         m_camera(nullptr)
+                                         m_camera(nullptr),
+                                         m_renderTechnique(nullptr)
 
 {}
 
@@ -98,6 +100,10 @@ bool RenderManager::init(bool vsync) {
     glUseProgram(m_shader->getProgramId());
 
     return true;
+}
+
+void RenderManager::setRenderTechnique(RenderTechnique *rt) {
+    m_renderTechnique = rt;
 }
     
 bool RenderManager::createTexture(const void *data, ImageFormat format, int w, int h, GLuint &glName) {
@@ -483,7 +489,10 @@ void RenderManager::render() {
     milliseconds cur, last = duration_cast<milliseconds>(
                         system_clock::now().time_since_epoch());
     beginFrame();
-    renderScene();
+    if(m_renderTechnique) {
+        m_renderTechnique->render();
+    }
+    //renderScene();
     endFrame();
     cur = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     int t = cur.count()-last.count();

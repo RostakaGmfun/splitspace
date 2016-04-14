@@ -16,14 +16,15 @@ class WindowManager;
 class LogManager;
 class ResourceManager;
 class SceneManager;
-class Scene;
-class Camera;
+class RenderTechnique;
 
 class Texture;
 class Shader;
 class Mesh;
 class Object;
 class Material;
+class Scene;
+class Camera;
 
 enum VertexFormat {
     VERTEX_UNKNOWN,
@@ -82,6 +83,9 @@ public:
     void render();
     void destroy();
 
+    void setRenderTechnique(RenderTechnique *rt);
+    RenderTechnique *getRenderTechnique() const { return m_renderTechnique; }
+
     void setScene(Scene *scn) { m_scene = scn; }
     void setCamera(Camera *cam) { m_camera = cam; }
 
@@ -138,6 +142,8 @@ private:
     Scene *m_scene;
     Shader *m_shader;
     Camera *m_camera;
+
+    RenderTechnique *m_renderTechnique;
 };
 
 } // namespace splitspace
