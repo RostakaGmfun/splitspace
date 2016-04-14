@@ -44,10 +44,6 @@ set(ENGINE_SRC
     src/Camera.cpp
     )
 
-set(DEMO_SRC
-    demo/main.cpp
-    )
-
 include_directories(include ${CMAKE_SOURCE_DIR})
 
 add_library(${ENGINE} STATIC ${ENGINE_SRC})
