@@ -3,6 +3,7 @@
 #include <splitspace/ResourceManager.hpp>
 #include <splitspace/Light.hpp>
 #include <splitspace/Material.hpp>
+#include <splitspace/Texture.hpp>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -163,9 +164,25 @@ void Shader::updateMaterialUniform() {
     setUniform(m_materialUniform.locations["ambient"], mm->ambient);
     setUniform(m_materialUniform.locations["diffuse"], mm->diffuse);
     setUniform(m_materialUniform.locations["specular"], mm->specular);
-    setUniform(m_materialUniform.locations["isTextured"], mm->diffuseMap != nullptr);
-    //TODO:
     setUniform(m_materialUniform.locations["technique"], 1);
+    Texture *diffuseMap = m_material->getDiffuseMap();
+    Texture *normalMap = m_material->getNormalMap();
+    if(diffuseMap && m_genericUniforms.find(UNIFORM_TEX_DIFFUSE)!=m_genericUniforms.end()) {
+        setUniform(m_materialUniform.locations["isTextured"], true);
+        //TODO:
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap->getGLName());
+        setUniform(m_genericUniforms[UNIFORM_TEX_DIFFUSE].location, 0);
+    } else {
+        setUniform(m_materialUniform.locations["isTextured"], false);
+    }
+
+    if(normalMap && m_genericUniforms.find(UNIFORM_TEX_NORMAL)!=m_genericUniforms.end()) {
+        //TODO:
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, diffuseMap->getGLName());
+        setUniform(m_genericUniforms[UNIFORM_TEX_NORMAL].location, 1);
+    }
 }
 
 void Shader::updateLightUniform() {

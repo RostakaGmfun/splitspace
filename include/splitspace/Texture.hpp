@@ -19,6 +19,8 @@ public:
     virtual bool load();
     virtual void unload();
 
+    GLuint getGLName() const { return m_glName; }
+
 private:
     int m_width;
     int m_height;

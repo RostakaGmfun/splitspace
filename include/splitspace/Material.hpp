@@ -35,6 +35,9 @@ public:
     virtual bool load();
     virtual void unload();
 
+    Texture *getDiffuseMap() const { return m_diffuseMap; }
+    Texture *getNormalMap() const { return m_normalMap; }
+
 private:
     Texture *m_diffuseMap;
     Texture *m_normalMap;
