@@ -3,6 +3,7 @@
 #include <splitspace/LogManager.hpp>
 #include <splitspace/Entity.hpp>
 #include <splitspace/Object.hpp>
+#include <splitspace/Light.hpp>
 #include <splitspace/ResourceManager.hpp>
 
 #include <algorithm>
@@ -52,6 +53,15 @@ bool Scene::load() {
             continue;
         }
         m_rootNode->addChild(o);
+    }
+
+    for(auto &it : sm->lights) {
+        Light *l = static_cast<Light *>(m_resMan->loadResource(it->name));
+        if(!l) {
+            continue;
+        }
+        m_rootNode->addChild(l);
+//        m_lights.push_back(l);
     }
 
     updateRenderMap();
