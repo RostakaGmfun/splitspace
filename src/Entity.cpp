@@ -81,9 +81,10 @@ void Entity::update(float dt) {
 
 void Entity::updateTransform() {
     m_world = glm::mat4(1);
-    if(m_parent) {
-        m_world*=m_parent->getWorldMat();
-    }
+//TODO
+//    if(m_parent) {
+//        m_world*=m_parent->getWorldMat();
+//    }
     m_world = glm::translate(m_world, m_pos);
     m_world = glm::rotate(m_world, m_rot.y, glm::vec3(0,1,0));
     m_world = glm::rotate(m_world, m_rot.x, glm::vec3(1,0,0));
