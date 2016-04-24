@@ -492,7 +492,6 @@ void RenderManager::render() {
     if(m_renderTechnique) {
         m_renderTechnique->render();
     }
-    //renderScene();
     endFrame();
     cur = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
     int t = cur.count()-last.count();
@@ -502,54 +501,6 @@ void RenderManager::render() {
 
 void RenderManager::beginFrame() {
     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-}
-
-void RenderManager::renderScene() {
-    if(!m_scene || !m_shader) {
-        return;
-    }
-
-    const auto &renderMap = m_scene->getRenderMap();
-    glUseProgram(m_shader->getProgramId());
-    for(auto it : renderMap) {
-        if(it.first) {
-            if(!setupMaterial(it.first)) {
-                m_logManager->logErr("Failed to setup material");
-                continue;
-            }
-        }
-
-        for(auto o : it.second) {
-            m_shader->setMVP(m_camera->getVP()*o->getWorldMat());
-            if(!setupMesh(o->getMesh())) {
-                m_logManager->logErr("Failed to setup mesh");
-                continue;
-            }
-            drawCall(o->getMesh()->getNumVerts());
-        }
-    }
-}
-
-bool RenderManager::setupMaterial(const Material *m) {
-    if(!m_shader || !m) {
-        return false;
-    }
-    m_shader->setMaterial(m);
-    m_shader->updateMaterialUniform();
-    return true;
-}
-
-bool RenderManager::setupMesh(const Mesh *m) {
-    if(!m || !m_shader || !m_camera) {
-        return false;
-    }
-
-    glBindVertexArray(m->getVAO());
-    return true;
-}
-
-void RenderManager::drawCall(std::size_t numVerts) {
-    glDrawArrays(GL_TRIANGLES, 0, numVerts);
 }
 
 void RenderManager::endFrame() {

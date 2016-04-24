@@ -3,6 +3,7 @@
 
 #include <splitspace/Resource.hpp>
 #include <splitspace/RenderManager.hpp>
+#include <splitspace/Scene.hpp>
 
 #include <vector>
 #include <map>
@@ -54,15 +55,14 @@ public:
     virtual bool load();
     virtual void unload();
 
-    void setNumLights(int num) { m_numLights = num; }
-    int getNumLights() const { return m_numLights; }
-    void setLight(int id, const Light *light);
+    void setNumLights(int num);
+    void setLight(int lightId, const Light *l);
+    void clearLights();
     void setMaterial(const Material *mat);
 
     void setMVP(const glm::mat4 &mvp);
 
     void updateMaterialUniform();
-    void updateLightUniform();
 
     GLuint getProgramId() const { return m_programId; }
 
@@ -84,8 +84,6 @@ private:
     };
 
     LightUniform m_lightUniform;
-    int m_numLights;
-    std::map<int, const Light *> m_lights;
 
     struct MaterialUniform {
         std::string name;
@@ -93,7 +91,6 @@ private:
     };
 
     MaterialUniform m_materialUniform;
-    const Material *m_material;
 
     struct GenericUniform {
         std::string name;

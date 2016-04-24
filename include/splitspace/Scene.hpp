@@ -13,6 +13,7 @@ class SceneManager;
 class ResourceManager;
 class Object;
 class Material;
+class Light;
 
 struct ObjectManifest;
 struct LightManifest;
@@ -25,6 +26,7 @@ struct SceneManifest: public ResourceManifest {
 };
 
 typedef std::map<const Material *, std::vector<const Object *> > RenderMap;
+typedef std::vector<const Light *> LightList;
 
 class Scene: public Resource {
 public:
@@ -38,6 +40,7 @@ public:
     Entity *getRootNode() const { return m_rootNode; }
 
     const RenderMap &getRenderMap() const { return m_renderMap; }
+    const LightList &getLightList() const { return m_lightList; }
 
 private:
     void updateRenderMap();
@@ -48,6 +51,7 @@ private:
     Engine *m_engine;
 
     RenderMap m_renderMap;
+    LightList m_lightList;
 };
 
 } // namespace splitspace

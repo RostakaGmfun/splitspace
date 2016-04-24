@@ -29,9 +29,9 @@ public:
     virtual bool init() = 0;
     virtual void update(float dt) = 0;
     virtual void render() {
-        for(size_t i = 0;i<m_passes.size();i++) {
-            if(m_passes[i]) {
-                doPass(i);
+        for(auto shader : m_passes) {
+            if(shader) {
+                doPass(shader);
             }
         }
     }
@@ -56,7 +56,7 @@ public:
     const int MAX_PASSES = 8;
 
 protected:
-    virtual void doPass(int passId) = 0;
+    virtual void doPass(Shader *shader) = 0;
 
 protected:
     RenderManager *m_renderManager;

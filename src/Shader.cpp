@@ -13,9 +13,7 @@ namespace splitspace {
 
 Shader::Shader(Engine *e, ShaderManifest *manifest):
                                           Resource(e, manifest),
-                                          m_programId(0),
-                                          m_numLights(0),
-                                          m_material(nullptr)
+                                          m_programId(0)
 {}
 
 bool Shader::load() {
@@ -138,26 +136,30 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
     }
 }
 
-void Shader::setLight(int id, const Light *light) {
-    if(!light || id>m_numLights-1) {
-        return;
+void Shader::setNumLights(int numLights) {
+    setUniform(m_genericUniforms[UNIFORM_NUM_LIGHTS].location,
+                                                    numLights);
+}
+
+void Shader::setLight(int lightId, const Light *l) {
+    LightManifest *lm = static_cast<LightManifest *>(l->getManifest());
+    auto &light = m_lightUniform.locations[lightId];
+    setUniform(light["position"], lm->pos);
+    setUniform(light["rotation"], lm->rot);
+    setUniform(light["diffuse"], lm->diffuse);
+    setUniform(light["specular"], lm->specular);
+    if(lm->lightType == LIGHT_SPOT) {
+        setUniform(light["spotLightCutoff"], lm->spotLightCutoff);
     }
-    m_lights[id] = light;
+    setUniform(light["power"], lm->power);
+    setUniform(light["type"], (int)lm->lightType);
 }
 
 void Shader::setMaterial(const Material *mat) {
-    m_material = mat;
-}
-
-void Shader::setMVP(const glm::mat4 &mvp) {
-    setUniform(m_genericUniforms[UNIFORM_MVP_MAT].location, mvp);
-}
-
-void Shader::updateMaterialUniform() {
-    if(!m_material || m_materialUniform.name.empty()) {
+    if(m_materialUniform.name.empty()) {
         return;
     }
-    MaterialManifest *mm = static_cast<MaterialManifest *>(m_material->getManifest());
+    MaterialManifest *mm = static_cast<MaterialManifest *>(mat->getManifest());
     if(!mm) {
         return;
     }
@@ -165,8 +167,8 @@ void Shader::updateMaterialUniform() {
     setUniform(m_materialUniform.locations["diffuse"], mm->diffuse);
     setUniform(m_materialUniform.locations["specular"], mm->specular);
     setUniform(m_materialUniform.locations["technique"], 1);
-    Texture *diffuseMap = m_material->getDiffuseMap();
-    Texture *normalMap = m_material->getNormalMap();
+    Texture *diffuseMap = mat->getDiffuseMap();
+    Texture *normalMap = mat->getNormalMap();
     if(diffuseMap && m_genericUniforms.find(UNIFORM_TEX_DIFFUSE)!=m_genericUniforms.end()) {
         setUniform(m_materialUniform.locations["isTextured"], true);
         //TODO:
@@ -185,28 +187,8 @@ void Shader::updateMaterialUniform() {
     }
 }
 
-void Shader::updateLightUniform() {
-    if(m_numLights<=0) {
-        return;
-    }
-    int i = 0;
-    for(auto &light : m_lightUniform.locations) {
-        LightManifest *lm = static_cast<LightManifest *>(m_lights[i]->getManifest());
-        if(!lm) {
-            continue;
-        }
-        setUniform(light["position"], lm->pos);
-        setUniform(light["rotation"], lm->rot);
-        setUniform(light["diffuse"], lm->diffuse);
-        setUniform(light["specular"], lm->specular);
-        if(lm->lightType == LIGHT_SPOT) {
-            setUniform(light["spotLightCutoff"], lm->spotLightCutoff);
-        }
-        setUniform(light["power"], lm->power);
-        setUniform(light["type"], (int)lm->lightType);
-
-        i++;
-    }
+void Shader::setMVP(const glm::mat4 &mvp) {
+    setUniform(m_genericUniforms[UNIFORM_MVP_MAT].location, mvp);
 }
 
 void Shader::setUniform(GLint id, float val) {

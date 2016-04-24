@@ -116,12 +116,7 @@ private:
     std::size_t getTextureSize(const GLuint texId);
 
     void beginFrame();
-    void renderScene();
     void endFrame();
-
-    bool setupMaterial(const Material *m);
-    bool setupMesh(const Mesh *m);
-    void drawCall(std::size_t numVerts);
 
 private:
     WindowManager *m_winManager;

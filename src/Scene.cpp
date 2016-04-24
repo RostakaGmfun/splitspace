@@ -61,7 +61,7 @@ bool Scene::load() {
             continue;
         }
         m_rootNode->addChild(l);
-//        m_lights.push_back(l);
+        m_lightList.push_back(l);
     }
 
     updateRenderMap();

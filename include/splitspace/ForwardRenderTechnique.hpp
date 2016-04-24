@@ -18,7 +18,7 @@ public:
     void destroy();
 
 private:
-    void doPass(int passId);
+    void doPass(Shader *shader);
     bool setupMaterial(Shader *shader, const Material *material);
     bool setupMesh(Shader *shader, const Mesh *mesh);
 

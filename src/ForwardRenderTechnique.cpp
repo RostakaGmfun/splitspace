@@ -32,15 +32,19 @@ void ForwardRenderTechnique::update(float dt) {
     static_cast<void>(dt);
 }
 
-void ForwardRenderTechnique::doPass(int passId) {
+void ForwardRenderTechnique::doPass(Shader *shader) {
     if(!m_scene) {
         return;
     }
 
-    Shader *shader = m_passes[passId];
-
-    const auto &renderMap = m_scene->getRenderMap();
     glUseProgram(shader->getProgramId());
+    const auto &renderMap = m_scene->getRenderMap();
+    const auto &lightList = m_scene->getLightList();
+    int i = 0;
+    for(const auto &l : lightList) {
+        shader->setLight(i++, l);
+    }
+    shader->setNumLights(lightList.size());
     for(auto it : renderMap) {
         if(it.first) {
             if(!setupMaterial(shader, it.first)) {
@@ -65,7 +69,6 @@ bool ForwardRenderTechnique::setupMaterial(Shader *shader, const Material *m) {
         return false;
     }
     shader->setMaterial(m);
-    shader->updateMaterialUniform();
     return true;
 }
 
