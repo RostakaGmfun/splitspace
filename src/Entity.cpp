@@ -18,7 +18,7 @@ Entity::Entity(Engine *e, EntityManifest *manifest,Entity *parent):
 bool Entity::load() {
     EntityManifest *em = static_cast<EntityManifest *>(m_manifest);
     m_pos = em->pos;
-    m_rot = em->rot;
+    m_rot = glm::radians(em->rot);
     m_scale = em->scale;
     if(m_manifest->type == RES_ENTITY) {
         m_isLoaded = true;
