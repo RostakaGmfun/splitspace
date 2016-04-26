@@ -411,6 +411,10 @@ bool ResourceManager::createScene(const std::string &name) {
             }
             readVec(lightMan->diffuse, jo["diffuse"]);
             readVec(lightMan->specular, jo["specular"]);
+            auto jattenuation = jo["attenuation"];
+            if(!jattenuation.is_null()) {
+                readVec(lightMan->attenuation, jo["attenuation"]);
+            }
             lightMan->power = jo["power"].is_null()?1.f:float(jo["power"]);
         } catch(std::domain_error e) {
             m_logMan->logErr("(ResourceManager) \""+lightName+"\":");

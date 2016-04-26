@@ -6,11 +6,15 @@ Light::Light(Engine *e, LightManifest *manifest, Entity *parent):
                                                  Entity(e, manifest, parent)
 {}
 
-void Light::update(float dt) {
-    static_cast<void>(dt);
-}
-
 bool Light::load() {
+    Entity::load();
+    LightManifest *lm = static_cast<LightManifest*>(m_manifest);
+    m_diffuse = lm->diffuse;
+    m_specular = lm->specular;
+    m_lightType = lm->lightType;
+    m_power = lm->power;
+    m_attenuation = lm->attenuation;
+    m_spotLightCutoff = lm->spotLightCutoff;
     m_isLoaded = true;
     return true;
 }
@@ -19,28 +23,8 @@ void Light::unload() {
     m_isLoaded = false;
 }
 
-const glm::vec3 &Light::getPosition() const {
-    return static_cast<LightManifest *>(m_manifest)->pos;
-}
-
-const glm::vec3 &Light::getRotation() const {
-    return static_cast<LightManifest *>(m_manifest)->rot;
-}
-
-const glm::vec3 &Light::getDiffuse() const {
-    return static_cast<LightManifest *>(m_manifest)->diffuse;
-}
-
-const glm::vec3 &Light::getSpecular() const {
-    return static_cast<LightManifest *>(m_manifest)->specular;
-}
-
-LightType Light::getType() const {
-    return static_cast<LightManifest *>(m_manifest)->lightType;
-}
-
-float Light::getPower() const {
-    return static_cast<LightManifest *>(m_manifest)->power;
+void Light::update(float dt) {
+    Entity::update(dt);
 }
 
 LightType Light::getTypeFromName(const std::string &name) {

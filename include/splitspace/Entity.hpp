@@ -32,9 +32,9 @@ public:
     const glm::vec3 &getRot() const { return m_rot; }
     const glm::vec3 &getScale() const { return m_scale; }
 
-    void setPos(glm::vec3 &pos) { m_pos = pos; }
-    void setRot(glm::vec3 &rot) { m_rot = rot; }
-    void setScale(glm::vec3 &scale) { m_scale = scale; }
+    void setPos(const glm::vec3 &pos) { m_pos = pos; }
+    void setRot(const glm::vec3 &rot) { m_rot = rot; }
+    void setScale(const glm::vec3 &scale) { m_scale = scale; }
 
     bool setParent(Entity *e);
     bool addChild(Entity *e);

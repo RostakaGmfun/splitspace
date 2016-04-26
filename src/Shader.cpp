@@ -103,6 +103,7 @@ void Shader::initUniforms(const std::map<std::string, UniformType> &mapping) {
         "specular",
         "spotLightCutoff",
         "power",
+        "attenuation",
         "type"
     };
     for(const auto &u : mapping) {
@@ -142,17 +143,17 @@ void Shader::setNumLights(int numLights) {
 }
 
 void Shader::setLight(int lightId, const Light *l) {
-    LightManifest *lm = static_cast<LightManifest *>(l->getManifest());
     auto &light = m_lightUniform.locations[lightId];
-    setUniform(light["position"], lm->pos);
-    setUniform(light["rotation"], lm->rot);
-    setUniform(light["diffuse"], lm->diffuse);
-    setUniform(light["specular"], lm->specular);
-    if(lm->lightType == LIGHT_SPOT) {
-        setUniform(light["spotLightCutoff"], lm->spotLightCutoff);
+    setUniform(light["position"], l->getPos());
+    setUniform(light["rotation"], l->getRot());
+    setUniform(light["diffuse"], l->getDiffuse());
+    setUniform(light["specular"], l->getSpecular());
+    if(l->getType() == LIGHT_SPOT) {
+        setUniform(light["spotLightCutoff"], l->getSpotLightCutoff());
     }
-    setUniform(light["power"], lm->power);
-    setUniform(light["type"], (int)lm->lightType);
+    setUniform(light["power"], l->getPower());
+    setUniform(light["attenuation"], l->getAttenuation());
+    setUniform(light["type"], (int)l->getType());
 }
 
 void Shader::setMaterial(const Material *mat) {
