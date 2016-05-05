@@ -15,14 +15,11 @@ public:
 
     bool init();
     void update(float dt);
+    void render();
     void destroy();
 
 private:
-    void doPass(Shader *shader);
-    bool setupMaterial(Shader *shader, const Material *material);
-    bool setupMesh(Shader *shader, const Mesh *mesh);
-
-    void drawCall(std::size_t numVerts);
+    Shader *m_shader;
 };
 
 } // namespace splitspace

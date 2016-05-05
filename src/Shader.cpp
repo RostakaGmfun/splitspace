@@ -143,6 +143,9 @@ void Shader::setNumLights(int numLights) {
 }
 
 void Shader::setLight(int lightId, const Light *l) {
+    if(m_lightUniform.name.empty()) {
+        return;
+    }
     auto &light = m_lightUniform.locations[lightId];
     setUniform(light["position"], l->getPos());
     setUniform(light["rotation"], l->getRot());

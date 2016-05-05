@@ -42,7 +42,9 @@ set(ENGINE_SRC
     src/Light.cpp
     src/Shader.cpp
     src/Camera.cpp
+    src/RenderTechnique.cpp
     src/ForwardRenderTechnique.cpp
+    src/DefferedRenderTechnique.cpp
     )
 
 include_directories(include ${CMAKE_SOURCE_DIR})

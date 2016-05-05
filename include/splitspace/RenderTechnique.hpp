@@ -16,10 +16,13 @@ class ResourceManager;
 class Scene;
 class Camera;
 class Shader;
+class Material;
+class Mesh;
 
 class RenderTechnique {
 public:
-    RenderTechnique(Engine *e): m_renderManager(e->renderManager),
+    RenderTechnique(Engine *e): m_engine(e),
+                                m_renderManager(e->renderManager),
                                 m_logManager(e->logManager),
                                 m_resManager(e->resManager)
     {}
@@ -28,24 +31,9 @@ public:
 
     virtual bool init() = 0;
     virtual void update(float dt) = 0;
-    virtual void render() {
-        for(auto shader : m_passes) {
-            if(shader) {
-                doPass(shader);
-            }
-        }
-    }
+    virtual void render() = 0;
 
     virtual void destroy() = 0;
-
-    bool addPass(int passId, Shader *shader) {
-        if(static_cast<size_t>(passId)>=m_passes.capacity()) {
-            return false;
-        }
-
-        m_passes[passId] = shader;
-        return true;
-    }
 
     void setScene(Scene *scene) { m_scene = scene; }
     Scene *getScene() const { return m_scene; }
@@ -53,19 +41,19 @@ public:
     void setViewCamera(Camera *camera) { m_viewCamera = camera; }
     Camera *getViewCamera() const { return m_viewCamera; }
 
-    const int MAX_PASSES = 8;
+protected:
+    bool setupMaterial(Shader *shader, const Material *material);
+    bool setupMesh(Shader *shader, const Mesh *mesh);
+
+    void drawCall(std::size_t numVerts);
 
 protected:
-    virtual void doPass(Shader *shader) = 0;
-
-protected:
+    Engine *m_engine;
     RenderManager *m_renderManager;
     LogManager *m_logManager;
     ResourceManager *m_resManager;
     Scene *m_scene;
     Camera *m_viewCamera;
-
-    std::vector<Shader*> m_passes;
 };
 
 } // namepsace splitspace

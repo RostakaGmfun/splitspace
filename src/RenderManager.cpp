@@ -500,7 +500,9 @@ void RenderManager::render() {
 }
 
 void RenderManager::beginFrame() {
-    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+    // TODO: do we need beginFrame() at all ?
+    // glClear should be called by RenderTechinque
+    //glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 }
 
 void RenderManager::endFrame() {
